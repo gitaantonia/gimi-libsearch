@@ -1,7 +1,7 @@
 <?php
 // session_start();
 
-require "koneksi.php";
+require "regis/koneksi.php";
 
 $error = "";
 $success = "";
