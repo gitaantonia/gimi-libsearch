@@ -1,8 +1,9 @@
 <?php
-require "regis/koneksi.php";
-require "regis/middleware.php";
+require "koneksi.php";
 
-if ($_SESSION["role"] != 1) {
+session_start();
+
+if (!isset($_SESSION["role"]) || $_SESSION["role"] != "pustakawan") {
     echo "Akses ditolak.";
     exit;
 }
@@ -10,4 +11,4 @@ if ($_SESSION["role"] != 1) {
 
 <h2>Halaman Admin</h2>
 <p>Hanya admin yang bisa melihat ini.</p>
-<a href="dashboard.php">Kembali</a>
+<a href="dashboard_adm.php">Kembali</a>
