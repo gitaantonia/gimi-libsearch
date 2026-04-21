@@ -1,0 +1,355 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* Mengatur Poppins sebagai font default untuk semua elemen */
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    background-image: url('../aset/img/bg.png');
+    background-attachment: fixed;
+    background-size: cover;
+    color: #0b1a38;
+}
+
+/* ===================== NAVBAR ===================== */
+.navbar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 1000px;
+    margin: 0px auto;
+    /* Saya sarankan opacity background dinaikkan sedikit agar teks hitam lebih mudah dibaca */
+    background: rgba(255, 255, 255, 0.4); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 40px;
+    border-radius: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 40px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #000000; /* UBAH KE HITAM */
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: #333; /* Warna saat hover agar ada feedback */
+}
+
+.nav-links a.active {
+    font-weight: 800;
+    color: #000000; /* TETAP HITAM */
+    border-bottom: 2px solid #000000; /* UBAH BORDER KE HITAM */
+}
+
+.nav-logo img {
+    height: 35px;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+    position: relative;
+    /* Wajib ada */
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.floating-book {
+    position: absolute;
+    top: 65%;
+    /* Sesuaikan ketinggiannya (misal di tengah vertikal) */
+    left: 50%;
+    /* Titik tengah horizontal */
+    transform: translate(-77%, -45%);
+    /* Geser balik agar tepat di center */
+    width: 230px;
+    /* Sesuaikan ukuran gambar */
+    z-index: 10;
+    /* Agar berada di atas elemen lain */
+    pointer-events: none;
+    /* Opsional: agar tidak mengganggu klik di bawahnya */
+}
+
+/* ===== LEFT SIDE ===== */
+.left {
+    flex: 0 0 45%;
+    width: 50%;
+    padding: 120px 40px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    /* Menggunakan Poppins Bold/Extra Bold untuk judul utama */
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0b1a38;
+    margin-bottom: 40px;
+    line-height: 1.2;
+    align-self: flex-start;
+    padding-left: 20px;
+    max-width: 80%;
+}
+
+/* CARD */
+.book-display-container {
+    position: relative;
+    width: 300px;
+    margin-top: 60px;
+}
+
+.book-cover-img {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 130px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    z-index: 5;
+}
+
+.book-details-card {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(25px);
+    border-radius: 30px;
+    padding: 140px 25px 30px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.book-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0b1a38;
+    text-align: center;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.book-author {
+    font-size: 0.85rem;
+    color: #555;
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* INFO BOX */
+.info-box {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 12px 20px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+}
+
+.info-box span {
+    color: #666;
+    font-weight: 600;
+}
+
+.info-box strong {
+    color: #0b1a38;
+    font-weight: 700;
+}
+
+/* BUTTON */
+.btn-borrow {
+    width: 100%;
+    margin-top: 15px;
+    padding: 16px;
+    border: none;
+    border-radius: 15px;
+    background: #1e293b;
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-borrow:hover {
+    transform: translateY(-3px);
+    background: #0f172a;
+    box-shadow: 0 12px 35px rgba(26, 37, 58, 0.4);
+}
+
+/* ===== RIGHT SIDE ===== */
+.right {
+    flex: 0 0 55%;
+    width: 50%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%),
+        linear-gradient(to bottom, #AEC8DE 0%, #5492C8 100%);
+
+    padding: 140px 50px 50px 120px;
+    color: #0b1a38;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    min-height: 100vh;
+}
+
+.badge-container {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.badge {
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.badge-category {
+    background: rgba(255, 255, 255, 0.2);
+    color: #0b1a38;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+
+/* TOP INFO */
+.top-info {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.top-info .box {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 20px 30px;
+    border-radius: 20px;
+    min-width: 160px;
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+
+}
+
+.top-info .box:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.top-info .box span {
+    font-size: 0.7rem;
+    color: rgba(11, 26, 56, 0.7);
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.top-info .box strong {
+    font-size: 1rem;
+    color: #0b1a38;
+    display: block;
+    font-weight: 800;
+}
+
+/* SINOPSIS */
+.sinopsis-card {
+    background: rgba(255, 255, 255, 0.25);
+    padding: 35px;
+    border-radius: 25px;
+}
+
+.sinopsis-card h3 {
+    font-size: 1.25rem;
+    /* Match .modal-box h3 */
+    font-weight: 800;
+}
+
+.sinopsis {
+    line-height: 1.7;
+    font-size: 0.93rem;
+    /* Menyesuaikan .filter-bar input font-size */
+    color: #333;
+}
+
+.sinopsis-card h3::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 40px;
+    height: 4px;
+    background: #0b1a38;
+    border-radius: 2px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        padding-top: 80px;
+    }
+
+    .left,
+    .right {
+        flex: 0 0 100%;
+        width: 100%;
+        padding: 60px 25px;
+    }
+
+    .right {
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .top-info {
+        flex-direction: row;
+        /* Tetap row atau ganti column sesuai selera */
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+
+    .title {
+        font-size: 32px;
+        padding-left: 0;
+        text-align: center;
+        align-self: center;
+    }
+
+    .floating-book {
+        display: none;
+    }
+}

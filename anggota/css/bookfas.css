@@ -1,0 +1,546 @@
+:root {
+    --blue: #0061ff;
+    --blue-dark: #0047c0;
+    --blue-light: #e8f0ff;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --yours: #2563eb;
+    --yours-light: #eff6ff;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --bg: #dde8f2;
+    --card-bg: rgba(255, 255, 255, 0.75);
+    --radius: 20px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+
+    /* Floral watercolor background — sesuai desain */
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse at 15% 35%, rgba(173, 208, 235, 0.55) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 65%, rgba(190, 215, 240, 0.45) 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Ccircle cx='50' cy='50' r='22' fill='none' stroke='%23a8c8e8' stroke-width='1.5' opacity='0.45'/%3E%3Ccircle cx='50' cy='50' r='12' fill='%23c5ddf2' opacity='0.28'/%3E%3Ccircle cx='180' cy='90' r='26' fill='none' stroke='%23a8c8e8' stroke-width='1.5' opacity='0.38'/%3E%3Ccircle cx='180' cy='90' r='14' fill='%23c5ddf2' opacity='0.22'/%3E%3Ccircle cx='100' cy='180' r='18' fill='none' stroke='%23b5cfe8' stroke-width='1.5' opacity='0.42'/%3E%3Ccircle cx='100' cy='180' r='9' fill='%23c5ddf2' opacity='0.26'/%3E%3Ccircle cx='210' cy='200' r='15' fill='none' stroke='%23a8c8e8' stroke-width='1' opacity='0.32'/%3E%3C/svg%3E");
+    background-attachment: fixed;
+}
+
+/* ============================================
+           LAYOUT
+        ============================================ */
+.page-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 24px 80px;
+}
+
+/* Two-column grid */
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 28px;
+    align-items: start;
+}
+
+/* ===================== NAVBAR ===================== */
+.navbar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 1000px;
+    margin: 0px auto;
+    /* Saya sarankan opacity background dinaikkan sedikit agar teks hitam lebih mudah dibaca */
+    background: rgba(255, 255, 255, 0.4); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 40px;
+    border-radius: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 40px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #000000; /* UBAH KE HITAM */
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: #333; /* Warna saat hover agar ada feedback */
+}
+
+.nav-links a.active {
+    font-weight: 800;
+    color: #000000; /* TETAP HITAM */
+    border-bottom: 2px solid #000000; /* UBAH BORDER KE HITAM */
+}
+
+.nav-logo img {
+    height: 35px;
+}
+
+/* ============================================
+           LEFT COLUMN
+        ============================================ */
+.page-title {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 8px;
+}
+
+.meta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 24px;
+}
+
+.meta-row svg {
+    flex-shrink: 0;
+}
+
+/* Gambar fasilitas */
+.facility-img-wrap {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    height: 400px;
+    background: #c9d8e8;
+    margin-bottom: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.10);
+}
+
+.facility-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Tag WiFi / Power Outlets di atas foto */
+.img-tags {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    display: flex;
+    gap: 10px;
+}
+
+.img-tag {
+    background: rgba(0, 0, 0, 0.52);
+    backdrop-filter: blur(6px);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Deskripsi dari DB */
+.description-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.description-card h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+}
+
+.description-card p {
+    font-size: 0.95rem;
+    color: #374151;
+    line-height: 1.7;
+}
+
+/* Available Now banner */
+.status-banner {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.status-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--green-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.status-text {
+    flex: 1;
+}
+
+.status-text h4 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.status-text .free-time {
+    color: var(--green);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.status-text p {
+    font-size: 0.83rem;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.btn-book-instantly {
+    background: var(--blue);
+    color: white;
+    border: none;
+    padding: 14px 26px;
+    border-radius: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-book-instantly:hover {
+    background: var(--blue-dark);
+    transform: scale(1.02);
+    color: white;
+}
+
+/* Info cards row */
+.info-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.info-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 16px;
+    padding: 20px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.info-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #475569;
+}
+
+.info-card-text span {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.info-card-text small {
+    font-size: 0.76rem;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+/* ============================================
+           RIGHT COLUMN — Schedule Panel
+        ============================================ */
+.schedule-panel {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.07);
+    position: sticky;
+    top: 24px;
+}
+
+.schedule-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.schedule-header h5 {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.date-pill {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.schedule-scroll {
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.schedule-scroll::-webkit-scrollbar {
+    width: 3px;
+}
+
+.schedule-scroll::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+/* Time row */
+.time-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.time-label {
+    min-width: 72px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    flex-shrink: 0;
+}
+
+.time-label.current {
+    color: var(--text);
+    font-weight: 800;
+}
+
+/* Slot boxes */
+.slot {
+    flex: 1;
+    padding: 14px 16px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    transition: transform 0.18s ease, background 0.18s ease;
+    border: 1px solid transparent;
+}
+
+/* Available slot */
+.slot-available {
+    background: white;
+    border-color: #e5e7eb;
+    border-left: 3px solid var(--green);
+}
+
+.slot-available:hover {
+    background: var(--green-light);
+    transform: translateX(3px);
+}
+
+/* Current available highlight */
+.slot-now {
+    background: var(--green-light);
+    border-color: var(--green);
+    border-left: 3px solid var(--green);
+}
+
+/* Occupied slot */
+.slot-occupied {
+    background: var(--red-light);
+    border-color: #fecaca;
+    border-left: 3px solid var(--red);
+    cursor: not-allowed;
+}
+
+/* My booking */
+.slot-mine {
+    background: var(--yours-light);
+    border-color: #bfdbfe;
+    border-left: 3px solid var(--yours);
+}
+
+/* Past slot */
+.slot-past {
+    background: #f9fafb;
+    border-color: #f1f5f9;
+    opacity: 0.6;
+    cursor: default;
+}
+
+.slot-title {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.slot-sub {
+    display: block;
+    font-size: 0.73rem;
+}
+
+.text-green {
+    color: var(--green);
+}
+
+.text-red {
+    color: var(--red);
+}
+
+.text-blue {
+    color: var(--yours);
+}
+
+.text-muted {
+    color: var(--muted);
+}
+
+/* Legend */
+.schedule-legend {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.legend-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+/* Select slot button */
+.btn-select-slot {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    padding: 13px;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #94a3b8;
+    cursor: not-allowed;
+    text-align: center;
+}
+
+/* ============================================
+           RESPONSIVE
+        ============================================ */
+@media (max-width: 900px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .schedule-panel {
+        position: static;
+    }
+
+    .info-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 540px) {
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .status-banner {
+        flex-wrap: wrap;
+    }
+
+    .info-row {
+        grid-template-columns: 1fr;
+    }
+
+    .facility-img-wrap {
+        height: 260px;
+    }
+}

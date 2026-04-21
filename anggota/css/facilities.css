@@ -1,0 +1,568 @@
+/* ============================================
+   FACILITIES PAGE - CSS
+   Sesuai desain: library background, floral pattern,
+   glassmorphism cards, floor navigation bubble
+   ============================================ */
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* Mengatur Poppins sebagai font default untuk semua elemen */
+    font-family: 'Poppins', sans-serif;
+    --primary-blue:   #2b4c8c;
+    --dark-blue:      #1d3557;
+    --available:      #2a9d8f;
+    --booked:         #e63946;
+    --maintenance:    #f4a261;
+    --glass-bg:       rgba(255, 255, 255, 0.55);
+    --muted:          #6b7280;
+    --text-dark:      #1f2937;
+}
+
+
+body {
+    /* Floral watercolor pattern background sesuai foto */
+    background-color: #dde8f0;
+    background-image:
+        radial-gradient(ellipse at 20% 40%, rgba(180, 210, 235, 0.5) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 70%, rgba(190, 215, 240, 0.4) 0%, transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Ccircle cx='40' cy='40' r='18' fill='none' stroke='%23a8c8e8' stroke-width='1.5' opacity='0.4'/%3E%3Ccircle cx='40' cy='40' r='10' fill='%23c5ddf2' opacity='0.25'/%3E%3Ccircle cx='160' cy='80' r='22' fill='none' stroke='%23a8c8e8' stroke-width='1.5' opacity='0.35'/%3E%3Ccircle cx='160' cy='80' r='12' fill='%23c5ddf2' opacity='0.2'/%3E%3Ccircle cx='90' cy='150' r='16' fill='none' stroke='%23b5cfe8' stroke-width='1.5' opacity='0.4'/%3E%3Ccircle cx='90' cy='150' r='8' fill='%23c5ddf2' opacity='0.25'/%3E%3Ccircle cx='170' cy='170' r='14' fill='none' stroke='%23a8c8e8' stroke-width='1' opacity='0.3'/%3E%3C/svg%3E");
+    background-attachment: fixed;
+    color: var(--text-dark);
+    min-height: 100vh;
+}
+
+/* ===================== NAVBAR ===================== */
+.navbar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 1000px;
+    margin: 0px auto;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 40px;
+    border-radius: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 40px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.nav-links a.active {
+    font-weight: 800;
+    border-bottom: 2px solid white;
+}
+
+.nav-logo img {
+    height: 35px;
+}
+/* ============================================
+   HERO HEADER
+   ============================================ */
+.header-section {
+    position: relative;
+    height: 480px;
+    background: url('../aset/img/fasbg.png') no-repeat center center;
+    background-size: cover;
+    /* Melengkung di bawah */
+    border-bottom-left-radius: 50% 7%;
+    border-bottom-right-radius: 50% 7%;
+    overflow: hidden;
+}
+
+/* Overlay gelap tipis biar teks lebih terbaca */
+.header-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.35) 100%);
+    pointer-events: none;
+}
+
+/* Judul "Featured Facilities" di dalam gambar (rendered via background-image)
+   Tidak perlu ditambahkan lewat CSS jika sudah ada di gambar aslinya.
+   Kalau gambar belum punya teks, aktifkan blok ini: */
+/*
+.header-section::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    color: white;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+    white-space: pre;
+    text-align: center;
+    z-index: 2;
+    pointer-events: none;
+}
+*/
+
+/* ---- Filter Tabs (di LUAR header, di bawah booking-title) ---- */
+.filter-container {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 2px 16px rgba(43, 76, 140, 0.07);
+    padding: 6px 18px;
+    border-radius: 40px;
+    width: fit-content;
+    margin: 0 auto 28px auto;
+}
+
+.filter-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 18px;
+    color: #6b7280;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.filter-btn:hover {
+    color: var(--primary-blue);
+    background: rgba(43, 76, 140, 0.07);
+}
+
+.filter-btn.active {
+    color: var(--primary-blue);
+    font-weight: 700;
+    background: rgba(43, 76, 140, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(43, 76, 140, 0.2);
+}
+
+/* ============================================
+   FLOOR NAVIGATION - Bubble circles
+   ============================================ */
+.floor-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: -52px; /* Memotong ke atas header */
+    position: relative;
+    z-index: 20;
+}
+
+.floor-btn {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: #374151;
+    line-height: 1.2;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.floor-btn span {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.floor-btn strong {
+    font-size: 20px;
+    display: block;
+    font-weight: 700;
+}
+
+.floor-btn:hover {
+    transform: scale(1.08) translateY(-3px);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.15);
+}
+
+.floor-btn.active {
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+    transform: scale(1.12);
+    box-shadow: 0 10px 28px rgba(43, 76, 140, 0.35);
+}
+
+/* ============================================
+   BOOKING TITLE
+   ============================================ */
+.booking-title {
+    text-align: center;
+    margin: 36px 0 20px 0;
+}
+
+.booking-title h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--text-dark);
+    letter-spacing: -0.5px;
+}
+
+.library-status {
+    display: inline-block;
+    background: rgba(43, 76, 140, 0.12);
+    color: var(--primary-blue);
+    padding: 6px 22px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 12px;
+    letter-spacing: 0.3px;
+}
+
+/* ============================================
+   FACILITIES GRID
+   ============================================ */
+.facilities-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1080px;
+    margin: 0 auto 80px auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 10;
+}
+
+/* Loading & empty states */
+.loading-state,
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+/* ============================================
+   CARD - Glassmorphism
+   ============================================ */
+.card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    box-shadow: 0 4px 24px rgba(31, 38, 135, 0.06);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.35s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 14px 40px rgba(31, 38, 135, 0.12);
+}
+
+/* ---- Image container ---- */
+.img-container {
+    position: relative;
+    height: 195px;
+    background: #c9d8e8; /* placeholder color kalau gambar gagal load */
+    overflow: hidden;
+}
+
+.img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.card:hover .img-container img {
+    transform: scale(1.04);
+}
+
+/* Gradient overlay di atas gambar (biar badge & judul terbaca) */
+.img-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+        rgba(0,0,0,0.0) 40%,
+        rgba(0,0,0,0.55) 100%);
+    pointer-events: none;
+}
+
+/* Badge row atas gambar */
+.img-overlay {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 3;
+}
+
+.badge-level {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.badge-status {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: white;
+    text-transform: uppercase;
+}
+
+.badge-status.status-tersedia  { background: var(--available); }
+.badge-status.status-penuh,
+.badge-status.status-booked    { background: var(--booked); }
+.badge-status.status-perbaikan { background: var(--maintenance); }
+
+/* Nama fasilitas overlay di atas gambar (bagian bawah) */
+.img-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    z-index: 3;
+}
+
+.img-title h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* ---- Card content ---- */
+.content {
+    padding: 18px 18px 16px;
+}
+
+.info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.info-item svg {
+    flex-shrink: 0;
+    color: #9ca3af;
+}
+
+.dot {
+    color: #d1d5db;
+    font-size: 14px;
+}
+
+.desc {
+    font-size: 12.5px;
+    color: #6b7280;
+    line-height: 1.55;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ---- Card footer: label + tombol ---- */
+.card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.free-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--available);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.repair-label {
+    font-size: 11px;
+    color: var(--maintenance);
+    font-weight: 600;
+}
+
+.btn-book {
+    padding: 9px 22px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: var(--primary-blue);
+    color: white;
+    box-shadow: 0 4px 14px rgba(43, 76, 140, 0.28);
+    white-space: nowrap;
+}
+
+.btn-book.disabled,
+.btn-book:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.btn-book:hover:not(:disabled) {
+    background: var(--dark-blue);
+    transform: scale(1.03);
+}
+
+/* ============================================
+   EXPLORE ALL CARD (card terakhir)
+   ============================================ */
+.card-explore {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    border: 2px dashed rgba(176, 184, 201, 0.6);
+}
+
+.card-explore:hover {
+    background: rgba(255,255,255,0.5);
+    border-color: rgba(43, 76, 140, 0.3);
+}
+
+.explore-inner {
+    text-align: center;
+    color: #9ca3af;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.explore-inner h4 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.explore-inner p {
+    font-size: 0.8rem;
+    color: #9ca3af;
+}
+
+/* ============================================
+   NO-IMAGE FALLBACK
+   ============================================ */
+.img-container.no-img {
+    background: linear-gradient(135deg, #c9d8e8, #a8bfd5);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 900px) {
+    .facilities-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .header-section {
+        height: 340px;
+        border-bottom-left-radius: 50% 5%;
+        border-bottom-right-radius: 50% 5%;
+    }
+
+    .floor-navigation {
+        gap: 12px;
+        margin-top: -44px;
+    }
+
+    .floor-btn {
+        width: 72px;
+        height: 72px;
+    }
+
+    .floor-btn strong { font-size: 16px; }
+
+    .filter-container {
+        gap: 0;
+        padding: 4px 10px;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn { padding: 7px 12px; font-size: 0.82rem; }
+
+    .facilities-grid {
+        grid-template-columns: 1fr;
+        padding: 0 16px;
+    }
+
+    .booking-title h2 { font-size: 1.6rem; }
+}
