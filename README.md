@@ -60,12 +60,12 @@ Otomatis menghitung masa pinjam agar kamu tidak kena "omelan" sistem.
 ---
 
 ## 👥 Tim Pengembang
-Proyek ini dikembangkan dengan tetesan keringat dan kopi oleh:
-- **Miftahul Jannah** (124240076) - *Backend Wizard*
-- **Gita Antonia Sipayung** (124240132) - *UI/UX Alchemist*
+Proyek ini dikembangkan dengan tetesan keringat dan air mata oleh:
+- **Miftahul Jannah** (124240076)
+- **Gita Antonia Sipayung** (124240132)
 
 <p align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2c1Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z/l41lI4bYvYvYvYvYv/giphy.gif" width="250" />
+  <img src="https://pin.it/7xsc6Kvcm" width="250" />
   <br><em>Kami saat kodenya akhirnya "Running" tanpa error</em>
 </p>
 
