@@ -1,72 +1,73 @@
-# 🚀 GiMi - Facility Booking History & Real-time Countdown
+# 📚 GiMi LibSearch — Digital Library System
+<p align="center">
+  <img src="https://capsule-render.vercel.app/render?type=waving&color=0061ff&height=200&section=header&text=GiMi%20LibSearch&fontSize=70&animation=fadeIn&fontAlignY=38" width="100%" />
+</p>
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![PHP](https://img.shields.io/badge/PHP-7.4+-777bb4.svg?logo=php)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-f7df1e.svg?logo=javascript)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-
-**GiMi** adalah modul riwayat peminjaman fasilitas yang interaktif. Fokus utama modul ini adalah memberikan pengalaman pengguna yang informatif dengan fitur **Live Countdown** yang menunjukkan sisa waktu pemakaian fasilitas secara *real-time* tanpa perlu memuat ulang halaman.
-
----
-
-## ✨ Fitur Utama
-
--   **🕒 Smart Real-time Countdown**: 
-    -   *Menuju Mulai:* Memberitahu pengguna berapa lama lagi sesi akan dimulai.
-    -   *Sisa Waktu:* Menampilkan sisa waktu pemakaian saat sesi sedang berlangsung secara dinamis.
-    -   *Auto-expiry:* Secara otomatis mengubah status tampilan jika sesi telah berakhir.
--   **🛡️ Secure Session**: Integrasi pengecekan login untuk memastikan data hanya dapat diakses oleh pemilik akun.
--   **📱 Responsive Design**: Antarmuka bersih menggunakan font *Plus Jakarta Sans* yang optimal di perangkat mobile maupun desktop.
--   **🎨 Status Badging**: Label status (Pending, Confirmed, Cancelled) dengan kode warna untuk identifikasi cepat.
+## 🚀 Tentang Proyek
+**GiMi LibSearch** adalah platform perpustakaan modern yang memadukan pencarian katalog buku (OPAC) dengan sistem booking fasilitas yang canggih. Tidak ada lagi drama kehabisan meja diskusi atau bingung mencari buku!
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## ✨ Fitur Unggulan & Meme Representasi
 
-| Komponen | Deskripsi |
+### 1. Pencarian Buku (OPAC)
+Cari buku secepat kilat berdasarkan judul, pengarang, atau kategori.
+<p align="center">
+  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHZ6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z/26n6Wyw85AWK2ayWI/giphy.gif" width="300" />
+  <br><em>POV: Kamu menemukan buku langka dalam 1 detik di GiMi LibSearch</em>
+</p>
+
+### 2. Real-time Countdown Booking
+Sistem paling jujur. Menampilkan sisa waktu pemakaian fasilitas secara detik demi detik.
+<p align="center">
+  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXA1Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z/hEwkspYYAPOA8/giphy.gif" width="300" />
+  <br><em>Melihat sisa waktu tinggal 1 menit: "I am speed!"</em>
+</p>
+
+### 3. Manajemen Denda & Sirkulasi
+Otomatis menghitung masa pinjam agar kamu tidak kena "omelan" sistem.
+<p align="center">
+  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmc1Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z/3o7TKSjPKYKZiI670A/giphy.gif" width="300" />
+  <br><em>Ekspresi kamu pas sadar lupa balikin buku dan denda numpuk</em>
+</p>
+
+---
+
+## 🛠️ Tech Stack
+| Bagian | Teknologi |
 | :--- | :--- |
-| **Backend** | PHP 7.4+ dengan MySQLi Prepared Statements |
-| **Frontend** | HTML5, CSS3 (Custom Variables), JavaScript (Vanilla ES6) |
-| **Database** | MySQL / MariaDB |
-| **Typography** | Plus Jakarta Sans via Google Fonts |
+| **Backend** | ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white) |
+| **Frontend** | ![JS](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) ![CSS](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white) |
+| **Database** | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white) |
+| **Tools** | ![Git](https://img.shields.io/badge/GIT-E44C30?style=for-the-badge&logo=git&logoColor=white) |
 
 ---
 
-## 📦 Instalasi & Penggunaan
+## ⚙️ Cara Menjalankan di Local
 
-1.  **Persyaratan**: Pastikan Anda memiliki folder `regis/` yang berisi `koneksi.php` dan file `helpers.php` di direktori yang sama.
-2.  **Database**: Pastikan tabel `bookings` memiliki kolom:
-    -   `tanggal` (DATE)
-    -   `jam_mulai` & `jam_selesai` (TIME)
-    -   `status_booking` (ENUM/VARCHAR)
-3.  **Deploy**: Salin file kode ke server lokal (XAMPP/Laragon) atau hosting Anda.
-4.  **Akses**: Login sebagai anggota dan buka halaman ini untuk melihat riwayat booking Anda.
-
----
-
-## 📸 Pratinjau Tampilan Logika
-
-> **Kondisi Menunggu:**
-> `⏱️ Mulai dalam: 0j 45m 10s`
-> 
-> **Kondisi Berlangsung:**
-> `⏳ Sisa waktu: 0j 20m 05s` (Teks berwarna Hijau)
->
-> **Kondisi Selesai:**
-> `✅ Sesi telah berakhir` (Teks berwarna Abu-abu)
+1.  **Clone Repo**
+    ```bash
+    git clone [https://github.com/username/gimi-libsearch.git](https://github.com/username/gimi-libsearch.git)
+    ```
+2.  **Database Setup**
+    - Buat database `gimi_db` di phpMyAdmin.
+    - Import file `.sql` yang tersedia.
+3.  **Koneksi**
+    - Sesuaikan `koneksi.php` dengan user & password MySQL Anda.
+4.  **Run!**
+    - Buka `localhost/gimi-libsearch` di browser kesayangan Anda.
 
 ---
 
-## 📝 Catatan Teknis
+## 👥 Tim Pengembang
+Proyek ini dikembangkan dengan tetesan keringat dan kopi oleh:
+- **Miftahul Jannah** (124240076) - *Backend Wizard*
+- **Gita Antonia Sipayung** (124240132) - *UI/UX Alchemist*
 
-Sistem *countdown* bekerja menggunakan **Unix Timestamp**. Waktu server (PHP) dikonversi menjadi detik dan dilempar ke atribut `data-start` dan `data-end` pada HTML. JavaScript kemudian mengambil waktu lokal klien untuk menghitung selisihnya setiap 1000ms (1 detik).
+<p align="center">
+  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2c1Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z/l41lI4bYvYvYvYvYv/giphy.gif" width="250" />
+  <br><em>Kami saat kodenya akhirnya "Running" tanpa error</em>
+</p>
 
 ---
-
-## 🤝 Kontribusi
-
-Kontribusi selalu terbuka! Silakan lakukan *fork* pada repositori ini dan kirimkan *pull request* untuk fitur-fitur baru atau perbaikan bug.
-
----
-
-Developed with ❤️ by **GiMi Team**
+<p align="center">© 2025 GiMi LibSearch - Build with ❤️ and Memes</p>
