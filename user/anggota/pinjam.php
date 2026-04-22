@@ -9,7 +9,7 @@ if (!isset($_SESSION['id_pengguna'])) {
 }
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     // Jika ID kosong, langsung lempar balik ke halaman daftar buku
-    header("Location: books.php"); 
+    header("Location: books.php");
     exit;
 }
 
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['proses_pinjam'])) {
         // Query INSERT
         $sql_simpan = "INSERT INTO peminjaman (id_peminjaman, id_anggota, id_buku, tgl_pinjam, tgl_jatuh_tempo, status) 
                        VALUES (UUID(), ?, ?, ?, ?, 'pending')";
-        
+
         $stmt_save = $conn->prepare($sql_simpan);
         $stmt_save->bind_param("ssss", $id_anggota, $id_buku_post, $tgl_pinjam, $tgl_kembali);
 
@@ -75,15 +75,30 @@ $cover = !empty($buku['cover_url']) ? $buku['cover_url'] : "aset/no-cover.png";
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Borrow Item - <?= htmlspecialchars($buku['judul']) ?></title>
     <link rel="stylesheet" href="css/pinjam.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
+    <nav class="navbar">
+        <div class="nav-logo"><img src="aset/img/logo.png" alt="GiMi Logo"></div>
+        <ul class="nav-links">
+            <li><a href="dashboard.php">Home</a></li>
+            <li><a href="books.php" class="active">Books</a></li>
+            <li><a href="facilities.php">Facilities</a></li>
+            <li><a href="reports.php">Reports</a></li>
+            <li><a href="profile.php">Profile</a></li>
+            <li>
+                <a href="../regis/logout.php" style="color:#c0392b;">Logout</a>
+            </li>
+        </ul>
+    </nav>
     <div class="main-content">
-        <?php if(isset($error_msg)): ?>
+        <?php if (isset($error_msg)): ?>
             <div style="color: red; background: #fee; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
                 <?= $error_msg ?>
             </div>
@@ -185,7 +200,7 @@ $cover = !empty($buku['cover_url']) ? $buku['cover_url'] : "aset/no-cover.png";
                 const s = new Date(startInput.value);
                 const e = new Date(endInput.value);
                 const diff = Math.ceil((e - s) / (1000 * 60 * 60 * 24));
-                
+
                 if (diff > 0 && diff <= 21) {
                     textDisplay.innerText = `Duration: ${diff} Days`;
                     textDisplay.style.color = "#1a73e8";
@@ -202,4 +217,5 @@ $cover = !empty($buku['cover_url']) ? $buku['cover_url'] : "aset/no-cover.png";
         endInput.onchange = updateDiff;
     </script>
 </body>
+
 </html>

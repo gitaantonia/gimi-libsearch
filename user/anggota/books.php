@@ -8,7 +8,8 @@ if (!isset($_SESSION["id_pengguna"])) {
     exit;
 }
 
-$id_pengguna = $_SESSION["id_pengguna"];
+$id_pengguna  = $_SESSION["id_pengguna"];
+$nama_pengguna = $_SESSION["nama"] ?? "Pengguna";
 
 // Ambil id_anggota dari session
 $stmt = $conn->prepare("SELECT id_anggota FROM anggota WHERE id_pengguna = ?");
@@ -335,6 +336,9 @@ function badge_pinjam($status, $tgl_tempo)
             <li><a href="facilities.php">Facilities</a></li>
             <li><a href="reports.php">Reports</a></li>
             <li><a href="profile.php">Profile</a></li>
+            <li>
+                <a href="../regis/logout.php" style="color:#c0392b;">Logout</a>
+            </li>
         </ul>
     </nav>
 

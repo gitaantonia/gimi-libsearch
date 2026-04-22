@@ -2,11 +2,13 @@
 session_start();
 require "../regis/koneksi.php";
 
-// Redirect jika belum login
-// if (!isset($_SESSION["id_pengguna"])) {
-//     header("Location: ../regis/login.php");
-//     exit;
-// }
+// ============================================================
+// GUARD — harus login dulu
+// ============================================================
+if (!isset($_SESSION["id_pengguna"])) {
+    header("Location: ../regis/login.php");
+    exit;
+}
 
 $id_pengguna = $_SESSION["id_pengguna"];
 $nama_user   = $_SESSION["nama"];
@@ -34,7 +36,7 @@ while ($row = $res->fetch_assoc()) {
 $stmt->close();
 
 // ============================================================
-// 2. NEW & TRENDING — 5 buku terbaru / terbanyak dipinjam
+// 2. NEW & TRENDING — 5 buku terbanyak dipinjam
 // ============================================================
 $trending_books = [];
 $res = $conn->query("
@@ -131,11 +133,10 @@ if (isset($_GET["q"]) && trim($_GET["q"]) !== "") {
 $booking_msg   = "";
 $booking_error = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["booking_fasilitas"])) {
-    $id_fasilitas = trim($_POST["id_fasilitas"]);
-    $waktu_mulai  = trim($_POST["waktu_mulai"]);
+    $id_fasilitas  = trim($_POST["id_fasilitas"]);
+    $waktu_mulai   = trim($_POST["waktu_mulai"]);
     $waktu_selesai = trim($_POST["waktu_selesai"]);
 
-    // Ambil id_anggota dari id_pengguna session
     $stmt = $conn->prepare("SELECT id_anggota FROM anggota WHERE id_pengguna = ?");
     $stmt->bind_param("s", $id_pengguna);
     $stmt->execute();
@@ -147,7 +148,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["booking_fasilitas"]))
     } else {
         $id_anggota = $res_a["id_anggota"];
 
-        // Cek bentrok waktu
         $stmt = $conn->prepare("
             SELECT id_booking FROM booking
             WHERE id_fasilitas = ?
@@ -186,7 +186,6 @@ $pinjam_error = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajukan_pinjam"])) {
     $id_buku = trim($_POST["id_buku"]);
 
-    // Ambil id_anggota
     $stmt = $conn->prepare("SELECT id_anggota FROM anggota WHERE id_pengguna = ?");
     $stmt->bind_param("s", $id_pengguna);
     $stmt->execute();
@@ -198,7 +197,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajukan_pinjam"])) {
     } else {
         $id_anggota = $res_a["id_anggota"];
 
-        // Cek denda aktif
         $stmt = $conn->prepare("
             SELECT d.id_denda FROM denda d
             JOIN peminjaman p ON d.id_peminjaman = p.id_peminjaman
@@ -213,7 +211,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajukan_pinjam"])) {
         if ($ada_denda > 0) {
             $pinjam_error = "Kamu masih memiliki denda yang belum dibayar.";
         } else {
-            // Cek status buku
             $stmt = $conn->prepare("SELECT status FROM buku WHERE id_buku = ?");
             $stmt->bind_param("s", $id_buku);
             $stmt->execute();
@@ -233,7 +230,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajukan_pinjam"])) {
                 $stmt->bind_param("ssss", $id_anggota, $id_buku, $tgl_pinjam, $tgl_jatuh_tempo);
 
                 if ($stmt->execute()) {
-                    // Update status buku
                     $upd = $conn->prepare("UPDATE buku SET status='dipinjam', tersedia=0 WHERE id_buku=?");
                     $upd->bind_param("s", $id_buku);
                     $upd->execute();
@@ -276,10 +272,13 @@ function cover($url, $judul = "")
             <li><a href="facilities.php">Facilities</a></li>
             <li><a href="reports.php">Reports</a></li>
             <li><a href="profile.php">Profile</a></li>
+            <li>
+                <a href="../regis/logout.php" style="color:#c0392b;">Logout</a>
+            </li>
         </ul>
     </nav>
-    <div class="atas">
 
+    <div class="atas">
         <!-- ===================== HERO ===================== -->
         <section class="hero">
             <div class="hero-text">
@@ -304,9 +303,9 @@ function cover($url, $judul = "")
             <div class="qm-icon"><i data-lucide="building-2"></i></div>
             <span>Facilities</span>
         </a>
-        <a href="scan.php" class="qm-item">
-            <div class="qm-icon"><i data-lucide="scan-line"></i></div>
-            <span>Scan</span>
+        <a href="pinjamfas.php" class="qm-item">
+            <div class="qm-icon"><i data-lucide="calendar-days"></i></div>
+            <span>Booking</span>
         </a>
     </section>
 
@@ -320,6 +319,7 @@ function cover($url, $judul = "")
             <a href="books.php" class="floating-search-btn">Search Books</a>
         </div>
     </section>
+
     <!-- ===================== FACILITIES ===================== -->
     <section class="facilities-section">
         <div class="facilities-wrapper">
@@ -332,13 +332,11 @@ function cover($url, $judul = "")
                         <img src="aset/img/fas2.png" alt="">
                     </div>
                     <?php if (!empty($facilities)): ?>
-                        <?php $max = 3;
-                        $total = count($facilities); ?>
                         <?php foreach ($facilities as $i => $fac): ?>
-                            <?php if ($i >= $max) break; ?>
+                            <?php if ($i >= 3) break; ?>
                             <p><?= htmlspecialchars($fac['nama_fasilitas']) ?></p>
                         <?php endforeach; ?>
-                        <?php if ($total > 3): ?><p>dan lain-lain</p><?php endif; ?>
+                        <?php if (count($facilities) > 3): ?><p>dan lain-lain</p><?php endif; ?>
                     <?php else: ?>
                         <p>Belum ada fasilitas</p>
                     <?php endif; ?>
@@ -442,11 +440,11 @@ function cover($url, $judul = "")
                     </div>
                 <?php endif; ?>
             </div>
-
-            <!-- ===================== RECENTLY BORROWED ===================== -->
         </section>
-        <div class="trending-rak">
-        </div>
+
+        <div class="trending-rak"></div>
+
+        <!-- ===================== RECENTLY BORROWED ===================== -->
         <section class="recently-section">
             <h3 class="section-label-vertical">Recently Borrowed</h3>
             <div class="recently-grid">
@@ -484,12 +482,10 @@ function cover($url, $judul = "")
             document.getElementById('bookingModal').style.display = 'none';
         }
 
-        // Tutup modal kalau klik overlay
         document.getElementById('bookingModal').addEventListener('click', function(e) {
             if (e.target === this) closeBookingModal();
         });
 
-        // Validasi waktu selesai > waktu mulai
         document.querySelectorAll('input[name="waktu_selesai"]').forEach(function(el) {
             el.addEventListener('change', function() {
                 const mulai = document.querySelector('input[name="waktu_mulai"]').value;
@@ -500,9 +496,7 @@ function cover($url, $judul = "")
             });
         });
     </script>
-    <script>
-        lucide.createIcons();
-    </script>
+    <script>lucide.createIcons();</script>
 </body>
 
 </html>

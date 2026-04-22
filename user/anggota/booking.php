@@ -1,9 +1,10 @@
 <?php
 session_start();
 include '../regis/koneksi.php';
+require "helpers.php";
 
 // Redirect kalau belum login
-if (!isset($_SESSION['id_anggota'])) {
+if (!isset($_SESSION['id_pengguna'])) {
     header("Location: ../regis/login.php");
     exit;
 }
@@ -16,7 +17,21 @@ $db = isset($conn) ? $conn : $koneksi;
 $id_fasilitas = $_GET['id']   ?? '';
 $time_key     = $_GET['time'] ?? '';
 $tanggal      = $_GET['tgl']  ?? date('Y-m-d');
-$id_anggota   = $_SESSION['id_anggota'];
+$id_pengguna  = $_SESSION['id_pengguna'];
+
+// Ambil data anggota berdasarkan id_pengguna
+$stmt = $db->prepare("SELECT * FROM anggota WHERE id_pengguna = ?");
+$stmt->bind_param("i", $id_pengguna);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+$stmt->close();
+
+if (!$user) {
+    die("<div style='padding:40px;text-align:center;font-family:sans-serif;'>Data anggota tidak ditemukan.</div>");
+}
+
+$id_anggota = $user['id_anggota'];
 
 if (empty($id_fasilitas) || empty($time_key)) {
     die("<div style='padding:40px;text-align:center;font-family:sans-serif;'>Parameter tidak lengkap.</div>");
@@ -25,17 +40,10 @@ if (empty($id_fasilitas) || empty($time_key)) {
 // ============================================================
 // AMBIL DATA FASILITAS
 // ============================================================
-$q_fas  = mysqli_query($db, "SELECT * FROM fasilitas WHERE id = '$id_fasilitas'");
-$fasilitas = mysqli_fetch_assoc($q_fas);
+$fasilitas = getFacilityData($db, $id_fasilitas);
 if (!$fasilitas) {
     die("<div style='padding:40px;text-align:center;font-family:sans-serif;'>Fasilitas tidak ditemukan.</div>");
 }
-
-// ============================================================
-// AMBIL DATA USER
-// ============================================================
-$q_user = mysqli_query($db, "SELECT * FROM anggota WHERE id_anggota = '$id_anggota'");
-$user   = mysqli_fetch_assoc($q_user);
 
 // ============================================================
 // PROSES BOOKING (POST)
@@ -54,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Cek slot masih kosong (race condition guard)
     $cek = mysqli_query($db,
-        "SELECT id FROM bookings
+        "SELECT id_booking FROM bookings
          WHERE id_fasilitas = '$id_fasilitas'
          AND tanggal = '$tgl_booking'
          AND status_booking != 'cancelled'
@@ -82,12 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ============================================================
 // HELPER
 // ============================================================
-function getCategoryIcon($k) {
-    if ($k === 'ruang_komputer') return '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>';
-    if ($k === 'ruang_diskusi')  return '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
-    return '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
-}
-function fmtKategori($t) { return ucwords(str_replace('_', ' ', $t)); }
+?>
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -587,13 +590,9 @@ function fmtKategori($t) { return ucwords(str_replace('_', ' ', $t)); }
                                 <input type="radio" name="durasi" id="dur1" value="1" checked>
                                 <label for="dur1">1 Hour</label>
                             </div>
-                            <div class="duration-pill">
-                                <input type="radio" name="durasi" id="dur2" value="2">
-                                <label for="dur2">2 Hours</label>
-                            </div>
                         </div>
                         <small style="color:var(--muted);font-size:.76rem;margin-top:6px;display:block;">
-                            Maksimal 2 jam per sesi.
+                            Maksimal 1 jam per sesi.
                         </small>
                     </div>
 
@@ -653,7 +652,7 @@ function fmtKategori($t) { return ucwords(str_replace('_', ' ', $t)); }
 
                 <div class="cat-badge">
                     <?= getCategoryIcon($fasilitas['kategori']) ?>
-                    <?= fmtKategori($fasilitas['kategori']) ?>
+                    <?= formatCategoryText($fasilitas['kategori']) ?>
                 </div>
 
                 <!-- Summary -->

@@ -1,6 +1,18 @@
 <?php
+session_start();
 require "../regis/koneksi.php";
 
+// ============================================================
+// GUARD — harus login dulu
+// ============================================================
+if (!isset($_SESSION["id_pengguna"])) {
+    header("Location: ../regis/login.php");
+    exit;
+}
+
+// ============================================================
+// AJAX — fetch fasilitas (dipanggil oleh JS)
+// ============================================================
 if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
     $kategori = isset($_GET['kategori']) ? $_GET['kategori'] : 'all';
     $lokasi   = isset($_GET['lokasi'])   ? $_GET['lokasi']   : '';
@@ -30,7 +42,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
     exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 
@@ -44,7 +55,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
 </head>
 
 <body>
-    <!-- NAVBAR -->
     <nav class="navbar">
         <div class="nav-logo"><img src="aset/img/logo.png" alt="GiMi Logo"></div>
         <ul class="nav-links">
@@ -53,8 +63,12 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
             <li><a href="facilities.php" class="active">Facilities</a></li>
             <li><a href="reports.php">Reports</a></li>
             <li><a href="profile.php">Profile</a></li>
+            <li>
+                <a href="../regis/logout.php" style="color:#c0392b;">Logout</a>
+            </li>
         </ul>
     </nav>
+
     <div class="header-section"></div>
 
     <div id="target-navigasi" class="floor-navigation">
@@ -84,16 +98,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
 
     <script>
         let activeKategori = 'ruang_diskusi';
-        let activeLokasi = 'Lantai 1';
+        let activeLokasi   = 'Lantai 1';
 
-        // Fungsi baru untuk scroll ke navigasi lantai
         function pindahKeLantai() {
             const target = document.getElementById('target-navigasi');
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
         }
 
         function setKategori(kategori, el) {
@@ -115,9 +124,16 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
             container.innerHTML = '<div class="loading-state">Memuat data...</div>';
 
             try {
-                // Pastikan file ini namanya facilities.php atau sesuaikan dengan nama file Anda
                 const url = `facilities.php?action=fetch&kategori=${encodeURIComponent(activeKategori)}&lokasi=${encodeURIComponent(activeLokasi)}`;
                 const response = await fetch(url);
+
+                // Kalau server redirect ke login (non-JSON), tangani dengan baik
+                const contentType = response.headers.get('content-type') || '';
+                if (!contentType.includes('application/json')) {
+                    window.location.href = '../regis/login.php';
+                    return;
+                }
+
                 const data = await response.json();
                 renderCards(data);
             } catch (err) {
@@ -132,20 +148,20 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
 
             if (data.length === 0) {
                 container.innerHTML = '<div class="empty-state">Tidak ada fasilitas ditemukan.</div>';
+                return;
             }
 
             data.forEach(item => {
                 const statusLabel = getStatusLabel(item.status);
                 const lokasiLabel = getLantaiLabel(item.lokasi);
-                const id = item.id; // Pastikan 'id' ini dieja sesuai kolom di database
-                // Sesuaikan logika isAvailable dengan status di Gambar 1 (misal 'dikembalikan' atau 'tersedia')
+                const id          = item.id;
                 const isAvailable = (item.status === 'tersedia' || item.status === 'dikembalikan');
 
                 const card = `
                 <div class="card">
                     <div class="img-container">
                         <img src="../admin/upload/${item.gambar || 'default.jpg'}" alt="${item.nama_fasilitas}"
-                             onerror="this.src='img/default.jpg'">
+                             onerror="this.src='aset/img/default.jpg'">
                         <div class="img-overlay">
                             <span class="badge-level">${lokasiLabel}</span>
                             <span class="badge-status status-${item.status}">${statusLabel}</span>
@@ -159,22 +175,19 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
                             <span class="info-item">👥 Kapasitas: ${item.kapasitas} Orang</span>
                         </div>
                         <p class="desc">${item.deskripsi || ''}</p>
-<div class="card-footer">
-    <button 
-        class="btn-book ${isAvailable ? '' : 'disabled'}" 
-        ${isAvailable ? '' : 'disabled'}
-        onclick="${isAvailable ? `window.location.href='bookfas.php?id=${id}'` : ''}">
-        
-        ${isAvailable ? 'Book Now' : 'Unavailable'}
-        
-    </button>
-</div>
+                        <div class="card-footer">
+                            <button 
+                                class="btn-book ${isAvailable ? '' : 'disabled'}" 
+                                ${isAvailable ? '' : 'disabled'}
+                                onclick="${isAvailable ? `window.location.href='bookfas.php?id=${id}'` : ''}">
+                                ${isAvailable ? 'Book Now' : 'Unavailable'}
+                            </button>
+                        </div>
                     </div>
                 </div>`;
                 container.innerHTML += card;
             });
 
-            // Tambahkan "Explore All" card dengan ONCLICK pindahKeLantai
             container.innerHTML += `
             <div class="card card-explore" onclick="pindahKeLantai()" style="cursor: pointer;">
                 <div class="explore-inner">
@@ -187,11 +200,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
 
         function getStatusLabel(status) {
             const map = {
-                tersedia: '✦ Available',
+                tersedia:     '✦ Available',
                 dikembalikan: '✦ Available',
-                dipinjam: 'Borrowed',
-                pending: 'Pending',
-                terlambat: 'Overdue'
+                dipinjam:     'Borrowed',
+                pending:      'Pending',
+                terlambat:    'Overdue'
             };
             return map[status] || status;
         }
@@ -200,9 +213,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
             return lokasi ? lokasi.toUpperCase() : '';
         }
 
-        window.onload = () => {
-            fetchData();
-        };
+        window.onload = () => fetchData();
     </script>
 </body>
 

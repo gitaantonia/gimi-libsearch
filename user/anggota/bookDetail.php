@@ -8,6 +8,9 @@ if (!isset($_SESSION["id_pengguna"])) {
     exit;
 }
 
+$id_pengguna   = $_SESSION["id_pengguna"];
+$nama_pengguna = $_SESSION["nama"] ?? "Pengguna";
+
 if (!isset($_GET['id'])) {
     echo "Buku tidak ditemukan.";
     exit;
@@ -56,6 +59,9 @@ $linkPinjam = "pinjam.php?id=" . urlencode($buku['id_buku']);
             <li><a href="facilities.php">Facilities</a></li>
             <li><a href="reports.php">Reports</a></li>
             <li><a href="profile.php">Profile</a></li>
+            <li>
+                <a href="../regis/logout.php" style="color:#c0392b;">Logout</a>
+            </li>
         </ul>
     </nav>
     <div class="container">

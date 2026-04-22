@@ -1,0 +1,174 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-image: url('../aset/img/bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 1000px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 40px;
+    border-radius: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 40px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.nav-logo img {
+    height: 35px;
+}
+
+.main-content {
+    padding: 140px 5% 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-title {
+    color: #04325f;
+    font-size: 38px;
+    font-weight: 800;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.page-subtitle {
+    color: #000000;
+    margin-bottom: 40px;
+    opacity: 0.9;
+    font-style: italic;
+}
+
+/* GRID SYSTEM UNTUK CARD KE SAMPING */
+.booking-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+/* CARD VERTIKAL */
+.booking-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 25px;
+    overflow: hidden;
+    /* Potong gambar agar mengikuti border radius */
+    display: flex;
+    flex-direction: column;
+    /* Gambar di atas, info di bawah */
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.booking-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.35);
+}
+
+/* CONTAINER GAMBAR */
+.card-img-top {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.card-body {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-left h3 {
+    color: #1a2a44;
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.info-left p {
+    color: #1a2a44;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 2px 0;
+    opacity: 0.8;
+}
+
+.timer-box {
+    margin-top: 15px;
+    background: #12213d;
+    color: #ffffff;
+    padding: 8px 15px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 11px;
+    text-align: center;
+}
+
+.status-container {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.status-badge {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.confirmed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+@media (max-width: 600px) {
+    .booking-grid {
+        grid-template-columns: 1fr;
+    }
+}

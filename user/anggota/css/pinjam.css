@@ -10,8 +10,9 @@
 
 body {
     /* Gunakan background pattern bunga biru sesuai gambar */
-    background: url('../path/to/your/floral-pattern.jpg'); /* Ganti dengan path gambar background Anda */
-    background-size: 300px;
+        background-image: url('../aset/img/bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
     background-attachment: fixed;
     min-height: 100vh;
     display: flex;
@@ -20,7 +21,53 @@ body {
     padding: 40px 20px;
 }
 
+/* ===================== NAVBAR ===================== */
+nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 1000px;
+    margin: 0px auto;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 40px;
+    border-radius: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 40px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.nav-links a.active {
+    font-weight: 800;
+    border-bottom: 2px solid white;
+}
+
+.nav-logo img {
+    height: 35px;
+}
 .main-content {
+    margin-top: 50px;
     width: 100%;
     max-width: 900px;
 }

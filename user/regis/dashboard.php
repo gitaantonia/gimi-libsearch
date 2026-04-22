@@ -1,6 +1,6 @@
 <?php
-require "regis/koneksi.php";
-require "regis/middleware.php";
+require "koneksi.php";
+require "middleware.php";
 ?>
 
 <h2>Halo, <?php echo $_SESSION["nama"]; ?></h2>
@@ -10,7 +10,7 @@ require "regis/middleware.php";
 
 <?php
 if ($_SESSION["role"] == 1) {
-    echo "<br><a href='admin/admin.php'>Masuk ke Halaman Admin</a>";
+    echo "<br><a href='admin.php'>Masuk ke Halaman Admin</a>";
 }
 ?>
 

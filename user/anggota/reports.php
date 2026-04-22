@@ -69,6 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_report'])) {
             <li><a href="facilities.php">Facilities</a></li>
             <li><a href="reports.php" class="active">Reports</a></li>
             <li><a href="profile.php">Profile</a></li>
+            <li>
+                <a href="../regis/logout.php" style="color:#c0392b;">Logout</a>
+            </li>
         </ul>
     </nav>
 
