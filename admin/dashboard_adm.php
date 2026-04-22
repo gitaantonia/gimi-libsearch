@@ -8,34 +8,98 @@ if (!isset($_SESSION['role'])) {
     exit;
 }
 
-// Optional: batasi hanya admin/pustakawan
 if ($_SESSION['role'] != 'pustakawan' && $_SESSION['role'] != 'admin') {
     echo "Akses ditolak";
     exit;
 }
 
-// Fetch real data (with fallbacks if table is empty or error)
-$total_buku = 0; $total_anggota = 0; $total_aktif = 0; $total_selesai = 0;
+// Helper time formatter
+function time_elapsed_string($datetime, $full = false) {
+    if (!$datetime) return 'unknown time';
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
 
+    $diff->w = floor($diff->d / 7);
+    $diff->d -= $diff->w * 7;
+
+    $string = array('y' => 'year','m' => 'month','w' => 'week','d' => 'day','h' => 'hour','i' => 'min','s' => 'sec');
+    foreach ($string as $k => &$v) {
+        if ($diff->$k) { $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : ''); } 
+        else { unset($string[$k]); }
+    }
+    if (!$full) $string = array_slice($string, 0, 1);
+    return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+
+$total_buku = 0; $total_anggota = 0; $total_aktif = 0; $total_selesai = 0;
 try {
     $q_buku = mysqli_query($conn, "SELECT COUNT(*) as total FROM buku");
     if($q_buku) { $d = mysqli_fetch_assoc($q_buku); $total_buku = $d['total']; }
-} catch (Exception $e) {}
-
-try {
     $q_anggota = mysqli_query($conn, "SELECT COUNT(*) as total FROM pengguna WHERE role='anggota'");
     if($q_anggota) { $d = mysqli_fetch_assoc($q_anggota); $total_anggota = $d['total']; }
-} catch (Exception $e) {}
-
-try {
     $q_aktif = mysqli_query($conn, "SELECT COUNT(*) as total FROM peminjaman WHERE status='dipinjam'");
     if($q_aktif) { $d = mysqli_fetch_assoc($q_aktif); $total_aktif = $d['total']; }
-} catch (Exception $e) {}
-
-try {
-    $q_selesai = mysqli_query($conn, "SELECT COUNT(*) as total FROM peminjaman WHERE status='kembali'");
+    $q_selesai = mysqli_query($conn, "SELECT COUNT(*) as total FROM peminjaman WHERE status IN ('kembali', 'dikembalikan')");
     if($q_selesai) { $d = mysqli_fetch_assoc($q_selesai); $total_selesai = $d['total']; }
 } catch (Exception $e) {}
+
+// Fetch recent activities
+$activities = [];
+try {
+    $q_act = mysqli_query($conn, "
+        SELECT p.id_peminjaman, p.status, p.created_at, p.tanggal_dikembalikan, u.nama, b.judul 
+        FROM peminjaman p 
+        JOIN pengguna u ON p.id_pengguna = u.id_pengguna 
+        LEFT JOIN buku b ON p.id_buku = b.id_buku 
+        ORDER BY p.updated_at DESC, p.created_at DESC 
+        LIMIT 5
+    ");
+    if($q_act) {
+        while($row = mysqli_fetch_assoc($q_act)) {
+            $activities[] = $row;
+        }
+    }
+} catch (Exception $e) {}
+
+// If updated_at is not available, we can fallback to created_at
+if (empty($activities)) {
+    try {
+        $q_act = mysqli_query($conn, "
+            SELECT p.id_peminjaman, p.status, p.created_at, p.tanggal_dikembalikan, u.nama, b.judul 
+            FROM peminjaman p 
+            JOIN pengguna u ON p.id_pengguna = u.id_pengguna 
+            LEFT JOIN buku b ON p.id_buku = b.id_buku 
+            ORDER BY p.created_at DESC 
+            LIMIT 5
+        ");
+        if($q_act) {
+            while($row = mysqli_fetch_assoc($q_act)) {
+                $activities[] = $row;
+            }
+        }
+    } catch (Exception $e) {}
+}
+
+// Fetch chart data (last 7 months)
+$chart_months = [];
+$chart_active = [];
+$chart_completed = [];
+for ($i = 6; $i >= 0; $i--) {
+    $month_year = date('Y-m', strtotime("-$i month"));
+    $month_label = date('M', strtotime("-$i month"));
+    $chart_months[] = $month_label;
+
+    $act_count = 0; $comp_count = 0;
+    try {
+        $q_act_m = mysqli_query($conn, "SELECT COUNT(*) as total FROM peminjaman WHERE DATE_FORMAT(created_at, '%Y-%m') = '$month_year'");
+        if($q_act_m) { $act_count = mysqli_fetch_assoc($q_act_m)['total']; }
+        $q_comp_m = mysqli_query($conn, "SELECT COUNT(*) as total FROM peminjaman WHERE DATE_FORMAT(tanggal_dikembalikan, '%Y-%m') = '$month_year'");
+        if($q_comp_m) { $comp_count = mysqli_fetch_assoc($q_comp_m)['total']; }
+    } catch (Exception $e) {}
+    $chart_active[] = $act_count;
+    $chart_completed[] = $comp_count;
+}
 ?>
 
 <!DOCTYPE html>
@@ -108,16 +172,22 @@ try {
             <svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
             <span class="font-medium">Book Catalogue</span>
         </a>
-        <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1">
+        <a href="book_requests.php" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1">
             <svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             <span class="font-medium">Book Requests</span>
         </a>
-        <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            <span class="font-medium">Facility Request</span>
+
+        <div class="pt-4 pb-2">
+            <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Fines & Reports</p>
+        </div>
+
+        <a href="problem_handling.php" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <span class="font-medium">Problem Handling</span>
         </a>
-        <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1">
-            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+
+        <a href="handling_fines.php" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
             <span class="font-medium">Handling Fines</span>
         </a>
     </nav>
@@ -132,7 +202,7 @@ try {
                 <p class="text-xs text-gray-500 truncate">Librarian</p>
             </div>
         </div>
-        <a href="logout.php" class="mt-2 flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-[#1a1d24] transition-colors cursor-pointer">
+        <a href="logoutadm.php" class="mt-2 flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-[#1a1d24] transition-colors cursor-pointer">
             <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             <span class="font-medium">Logout</span>
         </a>
@@ -166,8 +236,8 @@ try {
             $stats = [
                 ['label' => 'Total Books', 'value' => $total_buku, 'color' => '#3b82f6', 'icon' => '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>'],
                 ['label' => 'Total Members', 'value' => $total_anggota, 'color' => '#10b981', 'icon' => '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>'],
-                ['label' => 'Active Loans', 'value' => $total_aktif, 'color' => '#f59e0b', 'icon' => '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>'],
-                ['label' => 'Completed Loans', 'value' => $total_selesai, 'color' => '#8b5cf6', 'icon' => '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>'],
+                ['label' => 'Active Requests', 'value' => $total_aktif, 'color' => '#f59e0b', 'icon' => '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>'],
+                ['label' => 'Completed Requests', 'value' => $total_selesai, 'color' => '#8b5cf6', 'icon' => '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>'],
             ];
 
             foreach($stats as $index => $stat) {
@@ -229,28 +299,45 @@ try {
                     </div>
                     <div class="p-0">
                         <ul class="divide-y divide-[#2d3139]">
-                            <!-- Mock List Items -->
-                            <li class="p-4 hover:bg-[#1a1d24] transition-colors flex gap-3">
-                                <div class="w-2 h-2 mt-1.5 rounded-full bg-blue-500 shrink-0"></div>
-                                <div>
-                                    <p class="text-sm text-gray-200">Book "PHP Programming" borrowed by Budi.</p>
-                                    <p class="text-xs text-gray-500 mt-1">2 mins ago</p>
-                                </div>
-                            </li>
-                            <li class="p-4 hover:bg-[#1a1d24] transition-colors flex gap-3">
-                                <div class="w-2 h-2 mt-1.5 rounded-full bg-green-500 shrink-0"></div>
-                                <div>
-                                    <p class="text-sm text-gray-200">Discussion Room facility has been booked.</p>
-                                    <p class="text-xs text-gray-500 mt-1">1 hour ago</p>
-                                </div>
-                            </li>
-                            <li class="p-4 hover:bg-[#1a1d24] transition-colors flex gap-3">
-                                <div class="w-2 h-2 mt-1.5 rounded-full bg-purple-500 shrink-0"></div>
-                                <div>
-                                    <p class="text-sm text-gray-200">Book "The Art of Thinking" was returned.</p>
-                                    <p class="text-xs text-gray-500 mt-1">3 hours ago</p>
-                                </div>
-                            </li>
+                            <?php if (!empty($activities)): ?>
+                                <?php foreach ($activities as $act): ?>
+                                    <?php 
+                                        $act_status = strtolower($act['status']);
+                                        $color = 'bg-blue-500';
+                                        $action_text = "borrowed by";
+                                        $date_val = $act['created_at'];
+
+                                        if (in_array($act_status, ['kembali', 'dikembalikan'])) {
+                                            $color = 'bg-purple-500';
+                                            $action_text = "was returned by";
+                                            $date_val = $act['tanggal_dikembalikan'] ? $act['tanggal_dikembalikan'] : $act['created_at'];
+                                        } elseif ($act_status === 'pending') {
+                                            $color = 'bg-yellow-500';
+                                            $action_text = "was requested by";
+                                        } elseif ($act_status === 'ditolak') {
+                                            $color = 'bg-red-500';
+                                            $action_text = "request rejected for";
+                                        }
+
+                                        $title = $act['judul'] ? $act['judul'] : 'Unknown Book';
+                                        $nama = $act['nama'];
+                                        
+                                        $msg = "Book \"$title\" $action_text $nama.";
+                                        if ($act_status === 'ditolak') $msg = "Book request for \"$title\" by $nama was rejected.";
+                                        
+                                        $time_ago = time_elapsed_string($date_val);
+                                    ?>
+                                    <li class="p-4 hover:bg-[#1a1d24] transition-colors flex gap-3">
+                                        <div class="w-2 h-2 mt-1.5 rounded-full <?php echo $color; ?> shrink-0"></div>
+                                        <div>
+                                            <p class="text-sm text-gray-200"><?php echo htmlspecialchars($msg); ?></p>
+                                            <p class="text-xs text-gray-500 mt-1"><?php echo htmlspecialchars($time_ago); ?></p>
+                                        </div>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <li class="p-4 text-center text-gray-500 text-sm">No recent activities found.</li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                     <div class="p-4 border-t border-[#2d3139] text-center">
@@ -312,10 +399,10 @@ try {
     // Main Bar Chart 
     const ctxMain = document.getElementById('mainChart').getContext('2d');
     
-    // Some dynamic looking data based on current totals to make it look realistic
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-    const activeData = [12, 19, 15, Math.ceil(<?php echo max(10, $total_aktif); ?> * 0.8), <?php echo $total_aktif; ?>-2, Math.ceil(<?php echo max(20, $total_aktif); ?> * 1.2), <?php echo $total_aktif; ?>];
-    const completedData = [8, 15, 12, Math.ceil(<?php echo max(15, $total_selesai); ?> * 0.7), <?php echo $total_selesai; ?>-4, <?php echo $total_selesai; ?>-1, <?php echo $total_selesai; ?>];
+    // Dynamic data fetched from database
+    const months = <?php echo json_encode($chart_months); ?>;
+    const activeData = <?php echo json_encode($chart_active); ?>;
+    const completedData = <?php echo json_encode($chart_completed); ?>;
 
     new Chart(ctxMain, {
         type: 'bar',

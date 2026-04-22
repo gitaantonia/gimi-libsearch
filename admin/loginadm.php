@@ -45,7 +45,7 @@ if (isset($_POST["login"])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login - GiMi Library</title>
+    <title>Login - GiMi LibSearch</title>
 </head>
 
 <style>
