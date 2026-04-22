@@ -65,7 +65,7 @@ Proyek ini dikembangkan dengan tetesan keringat dan air mata oleh:
 - **Gita Antonia Sipayung** (124240132)
 
 <p align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTlkbGdoZmp4dnEyNmxtMm5ldzczanl1aGJjcGN4dHRhNXplbnRhNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VNTMx3LkpG2anXpwbr/giphy.gif" width="250" />
+  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTlkbGdoZmp4dnEyNmxtMm5ldzczanl1aGJjcGN4dHRhNXplbnRhNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VNTMx3LkpG2anXpwbr/giphy.webp" width="250" />
   <br><em>Kami saat kodenya akhirnya "Running" tanpa error</em>
 </p>
 
