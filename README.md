@@ -1,6 +1,6 @@
 # 📚 GiMi LibSearch — Digital Library System
 <p align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3azQwNXBoMmFjeW52aG1pZ2R6ZGVxYmd5NnBjbXVvbXoyc2RjeXpyNiZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/qGvmdlfJ0FtBSwxqA3/giphy.webp" width="100%" />
+  <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3azQwNXBoMmFjeW52aG1pZ2R6ZGVxYmd5NnBjbXVvbXoyc2RjeXpyNiZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/qGvmdlfJ0FtBSwxqA3/giphy.webp" width="50%" />
 </p>
 
 ## 🚀 Tentang Proyek
