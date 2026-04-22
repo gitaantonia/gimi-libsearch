@@ -1,10 +1,10 @@
 <?php
 // session_start() is handled by koneksi.php
-include 'koneksi.php';
+include '../koneksi.php';
 
 // Cek login
 if (!isset($_SESSION['role'])) {
-    header("Location: loginadm.php");
+    header("Location: login/loginadm.php");
     exit;
 }
 
@@ -176,6 +176,10 @@ for ($i = 6; $i >= 0; $i--) {
             <svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             <span class="font-medium">Book Requests</span>
         </a>
+        <a href="fasilitas_requests.php" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span class="font-medium">Facility Requests</span>
+        </a>
 
         <div class="pt-4 pb-2">
             <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Fines & Reports</p>
@@ -202,7 +206,7 @@ for ($i = 6; $i >= 0; $i--) {
                 <p class="text-xs text-gray-500 truncate">Librarian</p>
             </div>
         </div>
-        <a href="logoutadm.php" class="mt-2 flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-[#1a1d24] transition-colors cursor-pointer">
+        <a href="../login/logoutadm.php" class="mt-2 flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-[#1a1d24] transition-colors cursor-pointer">
             <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             <span class="font-medium">Logout</span>
         </a>

@@ -1,10 +1,61 @@
 <?php
 //session_start();
-include 'koneksi.php';
+include '../koneksi.php';
 
 // Validasi role (hanya admin/pustakawan)
 if (!isset($_SESSION['role']) || ($_SESSION['role'] != 'pustakawan' && $_SESSION['role'] != 'admin')) {
-    header("Location: loginadm.php");
+    header("Location: ../login/loginadm.php");
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_peminjaman'])) {
+    $id_peminjaman = $_POST['id_peminjaman'];
+
+    if (isset($_POST['tanggal_pinjam']) && isset($_POST['tanggal_kembali'])) {
+        // Proses ACC
+        $tanggal_pinjam = $_POST['tanggal_pinjam'];
+        $tanggal_kembali = $_POST['tanggal_kembali'];
+        $id_buku = $_POST['id_buku'] ?? '';
+
+        $conn->begin_transaction();
+        try {
+            // Update peminjaman status
+            $query_update = "UPDATE peminjaman SET status = 'dipinjam', tanggal_pinjam = ?, tanggal_kembali = ? WHERE id_peminjaman = ?";
+            $stmt_update = $conn->prepare($query_update);
+            $stmt_update->bind_param("ssi", $tanggal_pinjam, $tanggal_kembali, $id_peminjaman);
+            $stmt_update->execute();
+
+            // Mengurangi stok buku karena dipinjam
+            if (!empty($id_buku)) {
+                $query_buku = "UPDATE buku SET stok = stok - 1 WHERE id_buku = ? AND stok > 0";
+                $stmt_buku = $conn->prepare($query_buku);
+                $stmt_buku->bind_param("s", $id_buku);
+                $stmt_buku->execute();
+            }
+
+            $conn->commit();
+            $_SESSION['msg'] = "Request successfully approved!";
+            $_SESSION['msg_type'] = "success";
+        } catch (Exception $e) {
+            $conn->rollback();
+            $_SESSION['msg'] = "Failed to approve request.";
+            $_SESSION['msg_type'] = "danger";
+        }
+    } else {
+        // Proses Reject
+        $query = "UPDATE peminjaman SET status = 'ditolak' WHERE id_peminjaman = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $id_peminjaman);
+        
+        if ($stmt->execute()) {
+            $_SESSION['msg'] = "Request has been rejected.";
+            $_SESSION['msg_type'] = "success";
+        } else {
+            $_SESSION['msg'] = "Failed to reject request.";
+            $_SESSION['msg_type'] = "danger";
+        }
+    }
+    header("Location: book_requests.php");
     exit;
 }
 
@@ -137,6 +188,10 @@ $result = $stmt->get_result();
             <svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             <span class="font-medium">Book Requests</span>
         </a>
+        <a href="fasilitas_requests.php" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span class="font-medium">Facility Requests</span>
+        </a>
 
         <div class="pt-4 pb-2">
             <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Fines & Reports</p>
@@ -163,7 +218,7 @@ $result = $stmt->get_result();
                 <p class="text-xs text-gray-500 truncate">Librarian</p>
             </div>
         </div>
-        <a href="logoutadm.php" class="mt-2 flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-[#1a1d24] transition-colors cursor-pointer">
+        <a href="../login/logoutadm.php" class="mt-2 flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-[#1a1d24] transition-colors cursor-pointer">
             <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             <span class="font-medium">Logout</span>
         </a>
@@ -317,7 +372,7 @@ $result = $stmt->get_result();
             <h3 class="text-lg font-semibold text-white">Request Approve</h3>
             <button onclick="closeAccModal()" class="text-gray-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <form action="proses_acc.php" method="POST">
+        <form action="" method="POST">
             <div class="p-5 space-y-4">
                 <input type="hidden" name="id_peminjaman" id="acc_id_request">
                 <input type="hidden" name="id_buku" id="acc_id_buku">
@@ -343,7 +398,7 @@ $result = $stmt->get_result();
 <div id="modalReject" class="fixed inset-0 z-50 hidden flex items-center justify-center">
     <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="closeRejectModal()"></div>
     <div class="bg-[#15181e] border border-[#2d3139] rounded-xl shadow-2xl z-10 w-full max-w-sm mx-4 transform transition-all">
-        <form action="proses_reject.php" method="POST">
+        <form action="" method="POST">
             <div class="p-6 text-center">
                 <input type="hidden" name="id_peminjaman" id="reject_id_request">
                 

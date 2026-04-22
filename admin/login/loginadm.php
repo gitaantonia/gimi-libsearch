@@ -1,7 +1,7 @@
 <?php
 //session_start();
 
-require "koneksi.php";
+require "../koneksi.php";
 
 $error = "";
 
@@ -27,7 +27,7 @@ if (isset($_POST["login"])) {
 
         //  redirect berdasarkan role
         if ($user["role"] == "pustakawan") {
-            header("Location: dashboard_adm.php");
+            header("Location: dashboard/dashboard_adm.php");
         } else if ($user["role"] == "anggota") {
             header("Location: regis/dashboard.php");
         } else {

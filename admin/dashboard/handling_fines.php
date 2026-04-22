@@ -1,11 +1,22 @@
 <?php
 //session_start();
-include 'koneksi.php';
+include '../koneksi.php';
 
 // Security check
 if (!isset($_SESSION['role']) || ($_SESSION['role'] != 'pustakawan' && $_SESSION['role'] != 'admin')) {
-    header("Location: loginadm.php");
+    header("Location: ../login/loginadm.php");
     exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_denda'])) {
+    $id_denda = $_POST['id_denda'];
+    if (!empty($id_denda)) {
+        $stmt = $conn->prepare("UPDATE denda SET status = 'Sudah Dibayar' WHERE id_denda = ?");
+        $stmt->bind_param("i", $id_denda);
+        $stmt->execute();
+        header("Location: handling_fines.php?msg=paid");
+        exit;
+    }
 }
 
 // 1. Auto-generate late fines on page load
@@ -124,6 +135,10 @@ if ($qTotal && $rt = mysqli_fetch_assoc($qTotal)) {
             <svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             <span class="font-medium">Book Requests</span>
         </a>
+                <a href="fasilitas_requests.php" class="sidebar-item active flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span class="font-medium">Facility Requests</span>
+        </a>
 
         <div class="pt-4 pb-2">
             <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Fines & Reports</p>
@@ -150,7 +165,7 @@ if ($qTotal && $rt = mysqli_fetch_assoc($qTotal)) {
                 <p class="text-xs text-gray-500 truncate">Librarian</p>
             </div>
         </div>
-        <a href="logoutadm.php" class="mt-2 flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-[#1a1d24] transition-colors cursor-pointer">
+        <a href="../login/logoutadm.php" class="mt-2 flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-[#1a1d24] transition-colors cursor-pointer">
             <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             <span class="font-medium">Logout</span>
         </a>
@@ -314,7 +329,7 @@ if ($qTotal && $rt = mysqli_fetch_assoc($qTotal)) {
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex flex-col gap-2 relative z-10 w-full max-w-[140px] mx-auto">
                                         <?php if($row['id_denda'] && $row['status_denda'] == 'Belum Dibayar'): ?>
-                                            <form action="process_payment.php" method="POST" onsubmit="return confirmAction('Mark this fine as Paid?');">
+                                            <form action="" method="POST" onsubmit="return confirmAction('Mark this fine as Paid?');">
                                                 <input type="hidden" name="id_denda" value="<?php echo $row['id_denda']; ?>">
                                                 <button type="submit" class="w-full bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>

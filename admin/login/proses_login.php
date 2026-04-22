@@ -1,6 +1,6 @@
 <?php
 //session_start();
-include 'koneksi.php';
+include '../koneksi.php';
 
 $email = $_POST['email'];
 $password = $_POST['password'];
@@ -16,7 +16,7 @@ if ($data) {
         $_SESSION['nama'] = $data['nama'];
         $_SESSION['role'] = $data['role'];
 
-        header("Location: dashboard_adm.php");
+        header("Location: ../dashboard/dashboard_adm.php");
         exit;
 
     } else {
