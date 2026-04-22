@@ -1,6 +1,6 @@
 # 📚 GiMi LibSearch — Digital Library System
 <p align="center">
-  <img src="https://capsule-render.vercel.app/render?type=waving&color=0061ff&height=200&section=header&text=GiMi%20LibSearch&fontSize=70&animation=fadeIn&fontAlignY=38" width="100%" />
+  <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3azQwNXBoMmFjeW52aG1pZ2R6ZGVxYmd5NnBjbXVvbXoyc2RjeXpyNiZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/qGvmdlfJ0FtBSwxqA3/giphy.webp" width="100%" />
 </p>
 
 ## 🚀 Tentang Proyek
@@ -13,21 +13,21 @@
 ### 1. Pencarian Buku (OPAC)
 Cari buku secepat kilat berdasarkan judul, pengarang, atau kategori.
 <p align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHZ6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z/26n6Wyw85AWK2ayWI/giphy.gif" width="300" />
+  <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bHBrY21rZG1iNXZvcTkzdGN2d2RwZW1kZTlma3JraWJyaXhuNXl6ZiZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/okfvUCpgArv3y/giphy.webp" width="300" />
   <br><em>POV: Kamu menemukan buku langka dalam 1 detik di GiMi LibSearch</em>
 </p>
 
 ### 2. Real-time Countdown Booking
 Sistem paling jujur. Menampilkan sisa waktu pemakaian fasilitas secara detik demi detik.
 <p align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXA1Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z/hEwkspYYAPOA8/giphy.gif" width="300" />
+  <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3Y2VxMnF6bnViZGkza2dya3pzNnJta29jOWM0enY0ajFkanpyeGd5biZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/1zSz5MVw4zKg0/giphy.webp" width="300" />
   <br><em>Melihat sisa waktu tinggal 1 menit: "I am speed!"</em>
 </p>
 
 ### 3. Manajemen Denda & Sirkulasi
 Otomatis menghitung masa pinjam agar kamu tidak kena "omelan" sistem.
 <p align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmc1Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z3N6Z/3o7TKSjPKYKZiI670A/giphy.gif" width="300" />
+  <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZzdjbTM4ZmdzNTBud2JuNjJkcXowdzFpNGEwMHlwZ3BlNXhoaDVweiZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/15aGGXfSlat2dP6ohs/giphy.webp" width="300" />
   <br><em>Ekspresi kamu pas sadar lupa balikin buku dan denda numpuk</em>
 </p>
 
