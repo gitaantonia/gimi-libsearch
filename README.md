@@ -47,10 +47,10 @@ Otomatis menghitung masa pinjam agar kamu tidak kena "omelan" sistem.
 
 1.  **Clone Repo**
     ```bash
-    git clone [https://github.com/username/gimi-libsearch.git](https://github.com/username/gimi-libsearch.git)
+    git clone [https://github.com/gitaantonia/gimi-libsearch.git](https://github.com/gitaantonia/gimi-libsearch.git)
     ```
 2.  **Database Setup**
-    - Buat database `gimi_db` di phpMyAdmin.
+    - Buat database `gimi` di phpMyAdmin.
     - Import file `.sql` yang tersedia.
 3.  **Koneksi**
     - Sesuaikan `koneksi.php` dengan user & password MySQL Anda.
