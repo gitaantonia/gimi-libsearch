@@ -1,5 +1,5 @@
 <?php
-//session_start();
+session_start();
 include '../../regis/koneksi.php';
 
 // Validasi role (hanya admin/pustakawan)
@@ -11,41 +11,39 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] != 'pustakawan' && $_SESSION
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_peminjaman'])) {
     $id_peminjaman = $_POST['id_peminjaman'];
 
-    if (isset($_POST['tanggal_pinjam']) && isset($_POST['tanggal_kembali'])) {
+    if (isset($_POST['tgl_pinjam']) && isset($_POST['tgl_kembali'])) {
         // Proses ACC
-        $tanggal_pinjam = $_POST['tanggal_pinjam'];
-        $tanggal_kembali = $_POST['tanggal_kembali'];
+        $tgl_pinjam = $_POST['tgl_pinjam'];
+        $tgl_kembali = $_POST['tgl_kembali'];
         $id_buku = $_POST['id_buku'] ?? '';
 
         $conn->begin_transaction();
-        try {
-            // Update peminjaman status
-            $query_update = "UPDATE peminjaman SET status = 'dipinjam', tanggal_pinjam = ?, tanggal_kembali = ? WHERE id_peminjaman = ?";
-            $stmt_update = $conn->prepare($query_update);
-            $stmt_update->bind_param("ssi", $tanggal_pinjam, $tanggal_kembali, $id_peminjaman);
-            $stmt_update->execute();
+try {
+    $query_update = "UPDATE peminjaman SET status = 'dipinjam', tgl_pinjam = ?, tgl_jatuh_tempo = ? WHERE id_peminjaman = ?";
+    $stmt_update = $conn->prepare($query_update);
+    $stmt_update->bind_param("sss", $tgl_pinjam, $tgl_kembali, $id_peminjaman);
+    $stmt_update->execute();
 
-            // Mengurangi stok buku karena dipinjam
-            if (!empty($id_buku)) {
-                $query_buku = "UPDATE buku SET stok = stok - 1 WHERE id_buku = ? AND stok > 0";
-                $stmt_buku = $conn->prepare($query_buku);
-                $stmt_buku->bind_param("s", $id_buku);
-                $stmt_buku->execute();
-            }
+    if (!empty($id_buku)) {
+        $query_buku = "UPDATE buku SET stok = stok - 1 WHERE id_buku = ? AND stok > 0";
+        $stmt_buku = $conn->prepare($query_buku);
+        $stmt_buku->bind_param("s", $id_buku);
+        $stmt_buku->execute();
+    }
 
-            $conn->commit();
-            $_SESSION['msg'] = "Request successfully approved!";
-            $_SESSION['msg_type'] = "success";
-        } catch (Exception $e) {
-            $conn->rollback();
-            $_SESSION['msg'] = "Failed to approve request.";
-            $_SESSION['msg_type'] = "danger";
-        }
+    $conn->commit();
+    $_SESSION['msg'] = "Request successfully approved!";
+    $_SESSION['msg_type'] = "success";
+} catch (Exception $e) {
+    $conn->rollback();
+    $_SESSION['msg'] = "Failed to approve request.";
+    $_SESSION['msg_type'] = "danger";
+}
     } else {
         // Proses Reject
         $query = "UPDATE peminjaman SET status = 'ditolak' WHERE id_peminjaman = ?";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("i", $id_peminjaman);
+        $stmt->bind_param("s", $id_peminjaman);
         
         if ($stmt->execute()) {
             $_SESSION['msg'] = "Request has been rejected.";
@@ -85,18 +83,19 @@ $where_sql = implode(" AND ", $where_clauses);
 $query = "
     SELECT 
         r.id_peminjaman,
-        r.created_at,
+        r.tgl_pinjam,
         r.status,
-        p.id_pengguna,
-        p.nama,
+        a.id_anggota,
+        a.nama,
         b.id_buku,
         b.judul,
         b.stok
     FROM peminjaman r
-    JOIN pengguna p ON r.id_pengguna = p.id_pengguna
+    JOIN anggota a ON r.id_anggota = a.id_anggota
+    JOIN pengguna p ON a.id_pengguna = p.id_pengguna
     LEFT JOIN buku b ON r.id_buku = b.id_buku
     WHERE $where_sql
-    ORDER BY r.created_at DESC
+    ORDER BY r.tgl_pinjam DESC
 ";
 
 $stmt = $conn->prepare($query);
@@ -156,6 +155,12 @@ $result = $stmt->get_result();
         border-color: #3b82f6;
         box-shadow: 0 0 0 1px #3b82f6;
     }
+    .modal-hidden {
+    display: none !important;
+}
+.modal-show {
+    display: flex !important;
+}
 </style>
 </head>
 
@@ -310,7 +315,7 @@ $result = $stmt->get_result();
                                 }
                                 ?>
                             </td>
-                            <td class="px-6 py-4 text-gray-400 text-sm whitespace-nowrap"><?php echo date('d M Y H:i', strtotime($row['created_at'])); ?></td>
+                            <td class="px-6 py-4 text-gray-400 text-sm whitespace-nowrap"><?php echo date('d M Y H:i', strtotime($row['tgl_pinjam'])); ?></td>
                             <td class="px-6 py-4">
                                 <?php 
                                 if ($row['status'] == 'pending') {
@@ -334,10 +339,10 @@ $result = $stmt->get_result();
                                             <button disabled class="bg-gray-800 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-700 cursor-not-allowed">Out of stock</button>
                                             <button onclick="openRejectModal(<?php echo $row['id_peminjaman']; ?>)" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 px-2.5 py-1.5 rounded-lg transition-colors"><i class="fa-solid fa-xmark"></i></button>
                                         <?php else: ?>
-                                            <button onclick="openAccModal(<?php echo $row['id_peminjaman']; ?>, '<?php echo $row['id_buku']; ?>')" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5">
+                                            <button onclick="openAccModal('<?php echo $row['id_peminjaman']; ?>', '<?php echo $row['id_buku']; ?>')" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5">
                                                 <i class="fa-solid fa-check"></i> ACC
                                             </button>
-                                            <button onclick="openRejectModal(<?php echo $row['id_peminjaman']; ?>)" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-2.5 py-1.5 rounded-lg transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                                            <button onclick="openRejectModal('<?php echo $row['id_peminjaman']; ?>')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-2.5 py-1.5 rounded-lg transition-colors"><i class="fa-solid fa-xmark"></i></button>
                                         <?php endif; ?>
                                     </div>
                                 <?php else: ?>
@@ -365,7 +370,7 @@ $result = $stmt->get_result();
 </main>
 
 <!-- Tailwind Modal ACC -->
-<div id="modalAcc" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+<div id="modalAcc" class="modal-hidden fixed inset-0 z-50 items-center justify-center">
     <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="closeAccModal()"></div>
     <div class="bg-[#15181e] border border-[#2d3139] rounded-xl shadow-2xl z-10 w-full max-w-md mx-4 transform transition-all">
         <div class="flex justify-between items-center p-5 border-b border-[#2d3139]">
@@ -379,11 +384,11 @@ $result = $stmt->get_result();
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1.5">Request Date</label>
-                    <input type="date" class="w-full bg-[#0b0d10] border border-[#2d3139] text-gray-200 rounded-lg p-2.5" name="tanggal_pinjam" required value="<?php echo date('Y-m-d'); ?>">
+                    <input type="date" class="w-full bg-[#0b0d10] border border-[#2d3139] text-gray-200 rounded-lg p-2.5" name="tgl_pinjam" required value="<?php echo date('Y-m-d'); ?>">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1.5">Deadline</label>
-                    <input type="date" class="w-full bg-[#0b0d10] border border-[#2d3139] text-gray-200 rounded-lg p-2.5" name="tanggal_kembali" required value="<?php echo date('Y-m-d', strtotime('+3 days')); ?>">
+                    <input type="date" class="w-full bg-[#0b0d10] border border-[#2d3139] text-gray-200 rounded-lg p-2.5" name="tgl_kembali" required value="<?php echo date('Y-m-d', strtotime('+3 days')); ?>">
                 </div>
             </div>
             <div class="p-5 border-t border-[#2d3139] flex justify-end gap-3 bg-[#0b0d10]/50 rounded-b-xl">
@@ -395,7 +400,7 @@ $result = $stmt->get_result();
 </div>
 
 <!-- Tailwind Modal Reject -->
-<div id="modalReject" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+<div id="modalReject" class="modal-hidden fixed inset-0 z-50 items-center justify-center">
     <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="closeRejectModal()"></div>
     <div class="bg-[#15181e] border border-[#2d3139] rounded-xl shadow-2xl z-10 w-full max-w-sm mx-4 transform transition-all">
         <form action="" method="POST">
@@ -419,33 +424,34 @@ $result = $stmt->get_result();
 </div>
 
 <script>
-    // Modal controls for ACC
-    const modalAcc = document.getElementById('modalAcc');
-    const accReqId = document.getElementById('acc_id_request');
-    const accBukuId = document.getElementById('acc_id_buku');
+const modalAcc = document.getElementById('modalAcc');
+const accReqId = document.getElementById('acc_id_request');
+const accBukuId = document.getElementById('acc_id_buku');
+const modalReject = document.getElementById('modalReject');
+const rejectReqId = document.getElementById('reject_id_request');
 
-    function openAccModal(id, buku) {
-        accReqId.value = id;
-        accBukuId.value = buku;
-        modalAcc.classList.remove('hidden');
-    }
+function openAccModal(id, buku) {
+    accReqId.value = id;
+    accBukuId.value = buku;
+    modalAcc.classList.remove('modal-hidden');
+    modalAcc.classList.add('modal-show');
+}
 
-    function closeAccModal() {
-        modalAcc.classList.add('hidden');
-    }
+function closeAccModal() {
+    modalAcc.classList.remove('modal-show');
+    modalAcc.classList.add('modal-hidden');
+}
 
-    // Modal controls for Reject
-    const modalReject = document.getElementById('modalReject');
-    const rejectReqId = document.getElementById('reject_id_request');
+function openRejectModal(id) {
+    rejectReqId.value = id;
+    modalReject.classList.remove('modal-hidden');
+    modalReject.classList.add('modal-show');
+}
 
-    function openRejectModal(id) {
-        rejectReqId.value = id;
-        modalReject.classList.remove('hidden');
-    }
-
-    function closeRejectModal() {
-        modalReject.classList.add('hidden');
-    }
+function closeRejectModal() {
+    modalReject.classList.remove('modal-show');
+    modalReject.classList.add('modal-hidden');
+}
 </script>
 
 </body>
