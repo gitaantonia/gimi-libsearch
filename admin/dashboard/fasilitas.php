@@ -296,11 +296,11 @@ $default_preview = "https://images.unsplash.com/photo-1541123437800-1c39af6fcaad
                 <div class="grid grid-cols-2 gap-4">
                     <div class="mb-5">
                         <label class="text-gray-400 text-sm">Category *</label>
-                        <select name="kategori" class="w-full mt-2 p-3 rounded-lg bg-[#0b0d10] border border-[#2d3139] text-white focus:outline-none focus:border-blue-500">
-                            <option value="Reading room" <?php echo ($is_editing && $edit_data['kategori'] == 'Reading room') ? 'selected' : ''; ?>>Reading room</option>
-                            <option value="Computer Room" <?php echo ($is_editing && $edit_data['kategori'] == 'Computer Room') ? 'selected' : ''; ?>>Computer Room</option>
-                            <option value="Discussion Room" <?php echo ($is_editing && $edit_data['kategori'] == 'Discussion Room') ? 'selected' : ''; ?>>Discussion Room</option>
-                        </select>
+<select name="kategori" class="... text-white">
+    <option value="meja_baca" <?php echo ($is_editing && $edit_data['kategori'] == 'meja_baca') ? 'selected' : ''; ?>>Reading room</option>
+    <option value="ruang_komputer" <?php echo ($is_editing && $edit_data['kategori'] == 'ruang_komputer') ? 'selected' : ''; ?>>Computer Room</option>
+    <option value="ruang_diskusi" <?php echo ($is_editing && $edit_data['kategori'] == 'ruang_diskusi') ? 'selected' : ''; ?>>Discussion Room</option>
+</select>
                     </div>
                     <div class="mb-5">
                         <label class="text-gray-400 text-sm">Location</label>
