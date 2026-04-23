@@ -1,11 +1,11 @@
 <?php
 session_start();
-include '../regis/koneksi.php';
+include '../../regis/koneksi.php';
 require "helpers.php";
 
 // Redirect kalau belum login
 if (!isset($_SESSION['id_pengguna'])) {
-    header("Location: ../regis/login.php");
+    header("Location: ../../regis/login.php");
     exit;
 }
 
