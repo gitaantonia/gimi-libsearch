@@ -295,9 +295,12 @@ if ($id_anggota) {
 }
 
 // Helper: cover fallback
-function cover($url)
-{
-    return !empty($url) ? htmlspecialchars($url) : "aset/no-cover.png";
+function cover($url) {
+    if (empty($url)) return "../../admin/aset/covers/no-cover.png";
+    // Kalau sudah URL lengkap (http), pakai langsung
+    if (str_starts_with($url, 'http')) return htmlspecialchars($url);
+    // Kalau path relatif dari folder aset/covers admin
+    return "../../admin/aset/covers/" . htmlspecialchars(basename($url));
 }
 
 // Helper: label badge status peminjaman
@@ -435,7 +438,7 @@ function badge_pinjam($status, $tgl_tempo)
                             <div class="book-cover">
                                 <img src="<?= cover($bk['cover_url']) ?>"
                                     alt="<?= htmlspecialchars($bk['judul']) ?>"
-                                    onerror="this.src='admin/aset/covers/no-cover.png'">
+                                    onerror="this.src='../../admin/aset/covers/no-cover.png'">
                             </div>
                             <div class="book-meta">
                                 <h4><?= htmlspecialchars($bk['judul']) ?></h4>
@@ -506,9 +509,8 @@ function badge_pinjam($status, $tgl_tempo)
 
                             <img src="<?= cover($h['cover_url']) ?>"
                                 alt="<?= htmlspecialchars($h['judul']) ?>"
-                                onerror="this.src='aset/no-cover.png'"
+                                onerror="this.src='../../admin/aset/covers/no-cover.png'"
                                 class="history-cover">
-
                             <h3 class="history-title"><?= htmlspecialchars($h['judul']) ?></h3>
                             <p class="history-author"><?= htmlspecialchars($h['pengarang']) ?></p>
 
@@ -604,30 +606,30 @@ function badge_pinjam($status, $tgl_tempo)
     <script>
         // Modal detail buku (catalog)function openDetailModal(id, judul, pengarang, cover, status) {
         // Set data teks dan gambar
-function openDetailModal(id, judul, pengarang, cover, status) {
-    // Set data teks dan gambar
-    document.getElementById('modal-judul').textContent = judul;
-    document.getElementById('modal-pengarang').textContent = pengarang;
-    document.getElementById('modal-cover').src = cover;
+        function openDetailModal(id, judul, pengarang, cover, status) {
+            // Set data teks dan gambar
+            document.getElementById('modal-judul').textContent = judul;
+            document.getElementById('modal-pengarang').textContent = pengarang;
+            document.getElementById('modal-cover').src = cover;
 
-    const badge = document.getElementById('modal-badge');
-    const btnPinjam = document.getElementById('btn-pinjam-link');
+            const badge = document.getElementById('modal-badge');
+            const btnPinjam = document.getElementById('btn-pinjam-link');
 
-    // Update Link Href (Ganti detail_buku.php sesuai file tujuanmu)
-    btnPinjam.href = "bookDetail.php?id=" + id;
+            // Update Link Href (Ganti detail_buku.php sesuai file tujuanmu)
+            btnPinjam.href = "bookDetail.php?id=" + id;
 
-    if (status === 'tersedia') {
-        badge.textContent = 'Tersedia';
-        badge.className = 'badge badge-green';
-        btnPinjam.style.display = 'inline-flex';
-    } else {
-        badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-        badge.className = 'badge badge-red';
-        btnPinjam.style.display = 'none';
-    }
+            if (status === 'tersedia') {
+                badge.textContent = 'Tersedia';
+                badge.className = 'badge badge-green';
+                btnPinjam.style.display = 'inline-flex';
+            } else {
+                badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                badge.className = 'badge badge-red';
+                btnPinjam.style.display = 'none';
+            }
 
-    document.getElementById('detailModal').style.display = 'flex';
-}
+            document.getElementById('detailModal').style.display = 'flex';
+        }
 
         function closeDetailModal() {
             document.getElementById('detailModal').style.display = 'none';
