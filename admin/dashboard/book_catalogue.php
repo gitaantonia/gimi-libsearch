@@ -1,4 +1,5 @@
 <?php
+session_start();
 include '../../regis/koneksi.php';
 
 // Memastikan koneksi sesuai permintaan:

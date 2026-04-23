@@ -1,5 +1,5 @@
 <?php
-// session_start() is handled by koneksi.php
+session_start();
 include '../../regis/koneksi.php';
 
 // Validasi role (hanya admin/pustakawan)

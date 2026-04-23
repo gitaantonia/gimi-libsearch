@@ -1,6 +1,5 @@
 <?php
 session_start();
-//session_start();
 include '../../regis/koneksi.php';
 
 // Security check
@@ -9,13 +8,14 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] != 'pustakawan' && $_SESSION
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_denda'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_denda']) && isset($_POST['status_bayar'])) {
     $id_denda = $_POST['id_denda'];
+    $status_bayar = $_POST['status_bayar'];
     if (!empty($id_denda)) {
-        $stmt = $conn->prepare("UPDATE denda SET status = 'Sudah Dibayar' WHERE id_denda = ?");
-        $stmt->bind_param("i", $id_denda);
+        $stmt = $conn->prepare("UPDATE denda SET status_bayar = ? WHERE id_denda = ?");
+        $stmt->bind_param("ss", $status_bayar, $id_denda);
         $stmt->execute();
-        header("Location: handling_fines.php?msg=paid");
+        header("Location: handling_fines.php?msg=success");
         exit;
     }
 }
@@ -32,8 +32,8 @@ if ($resLate) {
     while ($row = mysqli_fetch_assoc($resLate)) {
         $amount = (int)$row['days_late'] * 2000;
         $id_p = $row['id_peminjaman'];
-        $stmt = $conn->prepare("INSERT IGNORE INTO denda (id_peminjaman, jenis, jumlah_denda, status) VALUES (?, 'keterlambatan', ?, 'Belum Dibayar')");
-        $stmt->bind_param("id", $id_p, $amount);
+        $stmt = $conn->prepare("INSERT IGNORE INTO denda (id_peminjaman, jenis, jumlah_denda, status_bayar) VALUES (?, 'keterlambatan', ?, 'belum_bayar')");
+        $stmt->bind_param("sd", $id_p, $amount);
         $stmt->execute();
     }
 }
@@ -49,9 +49,13 @@ if ($search) {
 }
 
 if ($filter === 'Unpaid') {
-    $whereClause .= " AND d.status_bayar = 'Belum Dibayar'";
+    $whereClause .= " AND d.status_bayar = 'belum_bayar'";
+} elseif ($filter === 'Pending') {
+    $whereClause .= " AND d.status_bayar = 'pending'";
 } elseif ($filter === 'Paid') {
-    $whereClause .= " AND d.status_bayar = 'Sudah Dibayar'";
+    $whereClause .= " AND d.status_bayar = 'lunas'";
+} elseif ($filter === 'Lainnya') {
+    $whereClause .= " AND d.status_bayar = 'lainnya'";
 } else if ($filter === 'With Fines') {
     $whereClause .= " AND d.id_denda IS NOT NULL";
 }
@@ -79,7 +83,7 @@ $result = mysqli_query($conn, $query);
 
 // Total outstanding fines
 $totalFines = 0;
-$qTotal = mysqli_query($conn, "SELECT SUM(jumlah_denda) as total_denda FROM denda WHERE status_bayar = 'Belum Dibayar'");
+$qTotal = mysqli_query($conn, "SELECT SUM(jumlah_denda) as total_denda FROM denda WHERE status_bayar IN ('belum_bayar', 'pending')");
 if ($qTotal && $rt = mysqli_fetch_assoc($qTotal)) {
     $totalFines = $rt['total_denda'] ?? 0;
 }
@@ -230,8 +234,10 @@ if ($qTotal && $rt = mysqli_fetch_assoc($qTotal)) {
                     <select name="filter" class="bg-[#0b0d10] border border-[#2d3139] text-gray-300 text-sm rounded-lg pl-3 pr-8 py-2.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none appearance-none cursor-pointer">
                         <option value="All" <?php if($filter=='All') echo 'selected'; ?>>All Loans & Fines</option>
                         <option value="With Fines" <?php if($filter=='With Fines') echo 'selected'; ?>>With Fines Only</option>
-                        <option value="Unpaid" <?php if($filter=='Unpaid') echo 'selected'; ?>>Unpaid Fines</option>
-                        <option value="Paid" <?php if($filter=='Paid') echo 'selected'; ?>>Paid Fines</option>
+                        <option value="Unpaid" <?php if($filter=='Unpaid') echo 'selected'; ?>>Unpaid</option>
+                        <option value="Pending" <?php if($filter=='Pending') echo 'selected'; ?>>Pending</option>
+                        <option value="Paid" <?php if($filter=='Paid') echo 'selected'; ?>>Paid</option>
+                        <option value="Lainnya" <?php if($filter=='Lainnya') echo 'selected'; ?>>Others</option>
                     </select>
                     <button type="submit" class="bg-[#1a1d24] hover:bg-[#2d3139] text-gray-300 px-4 py-2.5 rounded-lg border border-[#2d3139] transition-colors text-sm font-medium">Search</button>
                     <?php if($search || $filter !== 'All'): ?>
@@ -325,10 +331,14 @@ if ($qTotal && $rt = mysqli_fetch_assoc($qTotal)) {
                                                 <span class="text-sm font-bold text-white tracking-wide">Rp <?php echo number_format($row['jumlah_denda'], 0, ',', '.'); ?></span>
                                             </div>
                                             <div>
-                                                <?php if($row['status_denda'] == 'Belum Dibayar'): ?>
+                                                <?php if($row['status_denda'] == 'belum_bayar'): ?>
                                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-500/10 text-red-400 border border-red-500/20">UNPAID</span>
-                                                <?php else: ?>
+                                                <?php elseif($row['status_denda'] == 'pending'): ?>
+                                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">PENDING</span>
+                                                <?php elseif($row['status_denda'] == 'lunas'): ?>
                                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">PAID</span>
+                                                <?php else: ?>
+                                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">OTHERS</span>
                                                 <?php endif; ?>
                                             </div>
                                         </div>
@@ -338,13 +348,15 @@ if ($qTotal && $rt = mysqli_fetch_assoc($qTotal)) {
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex flex-col gap-2 relative z-10 w-full max-w-[140px] mx-auto">
-                                        <?php if($row['id_denda'] && $row['status_denda'] == 'Belum Dibayar'): ?>
-                                            <form action="" method="POST" onsubmit="return confirmAction('Mark this fine as Paid?');">
+                                        <?php if($row['id_denda']): ?>
+                                            <form action="" method="POST" class="w-full">
                                                 <input type="hidden" name="id_denda" value="<?php echo $row['id_denda']; ?>">
-                                                <button type="submit" class="w-full bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5">
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                    Mark Paid
-                                                </button>
+                                                <select name="status_bayar" onchange="if(confirmAction('Update fine status?')) this.form.submit(); else this.value='<?php echo $row['status_denda']; ?>';" class="w-full bg-[#0b0d10] border border-[#2d3139] text-gray-300 text-[11px] font-medium rounded-lg px-2 py-1.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none cursor-pointer">
+                                                    <option value="belum_bayar" <?php echo $row['status_denda']=='belum_bayar'?'selected':''; ?>>Belum Bayar</option>
+                                                    <option value="pending" <?php echo $row['status_denda']=='pending'?'selected':''; ?>>Pending</option>
+                                                    <option value="lunas" <?php echo $row['status_denda']=='lunas'?'selected':''; ?>>Lunas</option>
+                                                    <option value="lainnya" <?php echo $row['status_denda']=='lainnya'?'selected':''; ?>>Lainnya</option>
+                                                </select>
                                             </form>
                                         <?php endif; ?>
                                     </div>
