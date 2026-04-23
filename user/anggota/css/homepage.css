@@ -566,7 +566,7 @@ nav {
     height: 340px; 
     aspect-ratio: 3 / 4;
     object-fit: cover;
-    border-radius: 12px 12px 0 0; /* Tumpul di atas saja */
+    border-radius: 12px 12px 12px 0; /* Tumpul di atas saja */
     box-shadow: 0 0 20px 10px rgba(0,0,0,0.2);
 }
 
