@@ -27,7 +27,7 @@ if (isset($_POST["register"])) {
 
         if (empty($error)) {
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-            $roleDefault    = 2;      // 2 = anggota biasa
+            $roleDefault    = 'anggota';      // 2 = anggota biasa
             $status         = "Aktif";
 
             $stmt = $conn->prepare("
@@ -67,22 +67,17 @@ if (isset($_POST["login"])) {
         $user = $stmt->get_result()->fetch_assoc();
         $stmt->close();
 
-        if (!$user) {
-            $error = "Email tidak terdaftar.";
-        } elseif ((int)$user["aktif"] !== 0) {
+        if ((int)$user["aktif"] !== 0) {
             $error = "Akun kamu tidak aktif. Hubungi admin.";
         } elseif (!password_verify($password, $user["password_hash"])) {
             $error = "Password salah.";
         } else {
-            // Login sukses — set session
             session_regenerate_id(true);
-
             $_SESSION["id_pengguna"] = $user["id_pengguna"];
             $_SESSION["nama"]        = $user["nama"];
             $_SESSION["role"]        = $user["role"];
 
-            // Redirect berdasarkan role
-            if ((int)$user["role"] === 'pustakawan' || $user["role"] === 'kepala' || $user["role"] === 'staf_it') {
+            if ($user["role"] === 'pustakawan' || $user["role"] === 'kepala' || $user["role"] === 'staf_it') {
                 header("Location: ../admin/dashboard/dashboard_adm.php");
             } else {
                 header("Location: ../user/anggota/dashboard.php");
