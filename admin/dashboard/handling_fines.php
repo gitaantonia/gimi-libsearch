@@ -1,4 +1,5 @@
 <?php
+session_start();
 //session_start();
 include '../../regis/koneksi.php';
 
@@ -20,18 +21,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_denda'])) {
 }
 
 // 1. Auto-generate late fines on page load
-$qLate = "SELECT p.id_peminjaman, DATEDIFF(p.tanggal_dikembalikan, p.tanggal_kembali) as days_late 
+$qLate = "SELECT p.id_peminjaman, DATEDIFF(p.tgl_jatuh_tempo, p.tgl_kembali) as days_late 
           FROM peminjaman p 
-          LEFT JOIN denda d ON p.id_peminjaman = d.id_peminjaman AND d.jenis_denda = 'Terlambat'
-          WHERE p.tanggal_dikembalikan IS NOT NULL 
-          AND p.tanggal_dikembalikan > p.tanggal_kembali 
+          LEFT JOIN denda d ON p.id_peminjaman = d.id_peminjaman AND d.jenis = 'keterlambatan'
+          WHERE p.tgl_jatuh_tempo IS NOT NULL 
+          AND p.tgl_jatuh_tempo > p.tgl_kembali 
           AND d.id_denda IS NULL";
 $resLate = mysqli_query($conn, $qLate);
 if ($resLate) {
     while ($row = mysqli_fetch_assoc($resLate)) {
         $amount = (int)$row['days_late'] * 2000;
         $id_p = $row['id_peminjaman'];
-        $stmt = $conn->prepare("INSERT IGNORE INTO denda (id_peminjaman, jenis_denda, jumlah_denda, status) VALUES (?, 'Terlambat', ?, 'Belum Dibayar')");
+        $stmt = $conn->prepare("INSERT IGNORE INTO denda (id_peminjaman, jenis, jumlah_denda, status) VALUES (?, 'keterlambatan', ?, 'Belum Dibayar')");
         $stmt->bind_param("id", $id_p, $amount);
         $stmt->execute();
     }
@@ -48,18 +49,27 @@ if ($search) {
 }
 
 if ($filter === 'Unpaid') {
-    $whereClause .= " AND d.status = 'Belum Dibayar'";
+    $whereClause .= " AND d.status_bayar = 'Belum Dibayar'";
 } elseif ($filter === 'Paid') {
-    $whereClause .= " AND d.status = 'Sudah Dibayar'";
+    $whereClause .= " AND d.status_bayar = 'Sudah Dibayar'";
 } else if ($filter === 'With Fines') {
     $whereClause .= " AND d.id_denda IS NOT NULL";
 }
 
 $query = "
-    SELECT p.id_peminjaman, u.nama, b.judul, p.tanggal_kembali as return_deadline, p.tanggal_dikembalikan as return_date, p.status as loan_status,
-           d.id_denda, d.jenis_denda, d.jumlah_denda, d.status as status_denda
+    SELECT 
+        p.id_peminjaman, 
+        a.nama, 
+        b.judul, 
+        p.tgl_kembali AS return_deadline, 
+        p.tgl_jatuh_tempo AS return_date, 
+        p.status AS loan_status,
+        d.id_denda, 
+        d.jenis, 
+        d.jumlah_denda, 
+        d.status_bayar AS status_denda
     FROM peminjaman p
-    JOIN pengguna u ON p.id_pengguna = u.id_pengguna
+    JOIN anggota a ON p.id_anggota = a.id_anggota
     JOIN buku b ON p.id_buku = b.id_buku
     LEFT JOIN denda d ON p.id_peminjaman = d.id_peminjaman
     WHERE $whereClause
@@ -69,7 +79,7 @@ $result = mysqli_query($conn, $query);
 
 // Total outstanding fines
 $totalFines = 0;
-$qTotal = mysqli_query($conn, "SELECT SUM(jumlah_denda) as total_denda FROM denda WHERE status = 'Belum Dibayar'");
+$qTotal = mysqli_query($conn, "SELECT SUM(jumlah_denda) as total_denda FROM denda WHERE status_bayar = 'Belum Dibayar'");
 if ($qTotal && $rt = mysqli_fetch_assoc($qTotal)) {
     $totalFines = $rt['total_denda'] ?? 0;
 }
@@ -300,14 +310,14 @@ if ($qTotal && $rt = mysqli_fetch_assoc($qTotal)) {
                                         <div class="flex flex-col gap-1">
                                             <div class="flex items-center gap-2">
                                                 <?php 
-                                                    $f_type = $row['jenis_denda'];
+                                                    $f_type = $row['jenis'];
                                                     $tClass = "text-gray-400";
-                                                    if($f_type == 'Terlambat') $tClass = "text-yellow-400";
+                                                    if($f_type == 'keterlambatan') $tClass = "text-yellow-400";
                                                     if($f_type == 'Hilang') $tClass = "text-red-400";
                                                     if($f_type == 'Rusak') $tClass = "text-orange-400";
                                                     
                                                     $d_en = $f_type;
-                                                    if($f_type == 'Terlambat') $d_en = 'Late';
+                                                    if($f_type == 'keterlambatan') $d_en = 'Late';
                                                     if($f_type == 'Hilang') $d_en = 'Lost';
                                                     if($f_type == 'Rusak') $d_en = 'Damaged';
                                                 ?>
