@@ -13,7 +13,7 @@ $nama_pengguna = $_SESSION["nama"] ?? "Pengguna";
 
 // Ambil id_anggota dari session
 $stmt = $conn->prepare("SELECT id_anggota FROM anggota WHERE id_pengguna = ?");
-$stmt->bind_param("s", $id_pengguna);
+$stmt->bind_param("i", $id_pengguna);
 $stmt->execute();
 $anggota_row = $stmt->get_result()->fetch_assoc();
 $stmt->close();
@@ -435,7 +435,7 @@ function badge_pinjam($status, $tgl_tempo)
                             <div class="book-cover">
                                 <img src="<?= cover($bk['cover_url']) ?>"
                                     alt="<?= htmlspecialchars($bk['judul']) ?>"
-                                    onerror="this.src='aset/no-cover.png'">
+                                    onerror="this.src='admin/aset/covers/no-cover.png'">
                             </div>
                             <div class="book-meta">
                                 <h4><?= htmlspecialchars($bk['judul']) ?></h4>
