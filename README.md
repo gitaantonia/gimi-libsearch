@@ -70,4 +70,4 @@ Proyek ini dikembangkan dengan tetesan keringat dan air mata oleh:
 </p>
 
 ---
-<p align="center">© 2025 GiMi LibSearch - Build with ❤️ and Memes</p>
+<p align="center">© 2025 GiMi LibSearch - Build with ❤️ and Tears</p>
