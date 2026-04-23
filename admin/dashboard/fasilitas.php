@@ -58,7 +58,9 @@ if (isset($_POST['submit'])) {
         }
     }
 
-    if ($is_update) {
+if ($is_update) {
+    // Jika tidak ada gambar baru, jangan update kolom gambar
+    if (!empty($gambar)) {
         $query = "UPDATE fasilitas SET 
             nama_fasilitas='$nama', 
             kategori='$kategori', 
@@ -67,16 +69,17 @@ if (isset($_POST['submit'])) {
             lokasi='$lokasi',
             gambar='$gambar' 
             WHERE id='$id'";
-        if (mysqli_query($conn, $query)) {
-            $message = "Facility successfully updated";
-        }
     } else {
-        $query = "INSERT INTO fasilitas (nama_fasilitas, kategori, deskripsi, kapasitas, lokasi, gambar) 
-                  VALUES ('$nama', '$kategori', '$deskripsi', '$kapasitas', '$lokasi', '$gambar')";
-        if (mysqli_query($conn, $query)) {
-            $message = "Facility successfully added";
-        }
+        // Tidak ada gambar baru dan old_gambar kosong — update tanpa kolom gambar
+        $query = "UPDATE fasilitas SET 
+            nama_fasilitas='$nama', 
+            kategori='$kategori', 
+            deskripsi='$deskripsi', 
+            kapasitas='$kapasitas', 
+            lokasi='$lokasi'
+            WHERE id='$id'";
     }
+}
 }
 
 // Data untuk form Edit
