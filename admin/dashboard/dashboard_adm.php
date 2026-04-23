@@ -223,12 +223,6 @@ for ($i = 6; $i >= 0; $i--) {
             </div>
             <h2 class="text-2xl font-semibold text-white tracking-tight">Dashboard Statistics</h2>
         </div>
-        <div>
-            <button class="bg-[#1a1d24] hover:bg-[#2d3139] text-gray-300 px-4 py-2 rounded-lg border border-[#2d3139] flex items-center gap-2 transition-colors text-sm font-medium">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Export Report
-            </button>
-        </div>
     </header>
 
     <!-- Content -->
