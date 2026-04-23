@@ -567,7 +567,7 @@ nav {
     aspect-ratio: 3 / 4;
     object-fit: cover;
     border-radius: 12px 12px 0 0; /* Tumpul di atas saja */
-    box-shadow: 0 -10px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 0 20px 10px rgba(0,0,0,0.2);
 }
 
 .trending-left {
@@ -601,7 +601,7 @@ nav {
     height: 55px;
     background-image: url('../aset/img/rak.png');
     background-size: 100% 100%;
-    z-index: 10; /* WAJIB: Di atas gambar buku */
+    z-index: 1; /* WAJIB: Di atas gambar buku */
     margin-top: -5px; /* Sedikit overlap agar tidak ada celah */
 }
 
