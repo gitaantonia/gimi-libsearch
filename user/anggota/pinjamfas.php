@@ -1,10 +1,10 @@
 <?php
 session_start();
-include '../regis/koneksi.php';
+include '../../regis/koneksi.php';
 require "helpers.php";
 
 if (!isset($_SESSION['id_pengguna'])) {
-    header("Location: ../regis/login.php");
+    header("Location: ../../regis/login.php");
     exit;
 }
 
@@ -54,7 +54,7 @@ $bookings = $stmt_book->get_result();
             <li><a href="reports.php">Reports</a></li>
             <li><a href="profile.php">Profile</a></li>
             <li>
-                <a href="../regis/logout.php" style="color:#c0392b;">Logout</a>
+                <a href="../../regis/logout.php" style="color:#c0392b;">Logout</a>
             </li>
         </ul>
     </nav>

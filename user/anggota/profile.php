@@ -1,10 +1,10 @@
 <?php
 session_start();
-require "../regis/koneksi.php";
+require "../../regis/koneksi.php";
 
 // Proteksi halaman
 if (!isset($_SESSION['id_pengguna'])) {
-    header("Location: ../regis/login.php");
+    header("Location: ../../regis/.php");
     exit;
 }
 
@@ -163,7 +163,7 @@ if ($sudah_anggota) {
             <li><a href="reports.php">Reports</a></li>
             <li><a href="profile.php" class="active">Profile</a></li>
             <li>
-                <a href="../regis/logout.php" style="color:#c0392b;">Logout</a>
+                <a href="../../regis/logout.php" style="color:#c0392b;">Logout</a>
             </li>
         </ul>
     </nav>

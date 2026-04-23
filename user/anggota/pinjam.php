@@ -1,10 +1,10 @@
 <?php
 session_start();
-require "../regis/koneksi.php";
+require "../../regis/koneksi.php";
 
 // 1. Proteksi Halaman
 if (!isset($_SESSION['id_pengguna'])) {
-    header("Location: ../regis/login.php");
+    header("Location: ../../regis/login.php");
     exit;
 }
 if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -93,7 +93,7 @@ $cover = !empty($buku['cover_url']) ? $buku['cover_url'] : "aset/no-cover.png";
             <li><a href="reports.php">Reports</a></li>
             <li><a href="profile.php">Profile</a></li>
             <li>
-                <a href="../regis/logout.php" style="color:#c0392b;">Logout</a>
+                <a href="../../regis/logout.php" style="color:#c0392b;">Logout</a>
             </li>
         </ul>
     </nav>

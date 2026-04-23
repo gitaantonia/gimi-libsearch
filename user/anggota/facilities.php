@@ -1,12 +1,12 @@
 <?php
 session_start();
-require "../regis/koneksi.php";
+require "../../regis/koneksi.php";
 
 // ============================================================
 // GUARD — harus login dulu
 // ============================================================
 if (!isset($_SESSION["id_pengguna"])) {
-    header("Location: ../regis/login.php");
+    header("Location: ../../regis/login.php");
     exit;
 }
 
@@ -64,7 +64,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
             <li><a href="reports.php">Reports</a></li>
             <li><a href="profile.php">Profile</a></li>
             <li>
-                <a href="../regis/logout.php" style="color:#c0392b;">Logout</a>
+                <a href="../../regis/.php" style="color:#c0392b;">Logout</a>
             </li>
         </ul>
     </nav>
@@ -130,7 +130,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
                 // Kalau server redirect ke login (non-JSON), tangani dengan baik
                 const contentType = response.headers.get('content-type') || '';
                 if (!contentType.includes('application/json')) {
-                    window.location.href = '../regis/login.php';
+                    window.location.href = '../../regis/login.php';
                     return;
                 }
 
