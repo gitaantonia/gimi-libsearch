@@ -1,12 +1,12 @@
 <?php
-include '../koneksi.php';
+include '../../regis/koneksi.php';
 
 // Memastikan koneksi sesuai permintaan:
 $conn = mysqli_connect("localhost", "root", "", "gimi");
 
 // Cek login
 if (!isset($_SESSION['role'])) {
-    header("Location: ../login/loginadm.php");
+    header("Location: ../../regis/login.php");
     exit;
 }
 
