@@ -82,10 +82,10 @@ if (isset($_POST["login"])) {
             $_SESSION["role"]        = $user["role"];
 
             // Redirect berdasarkan role
-            if ((int)$user["role"] === 1) {
-                header("Location: ../admin/dashboard.php");
+            if ((int)$user["role"] === 'pustakawan' || $user["role"] === 'kepala' || $user["role"] === 'staf_it') {
+                header("Location: ../admin/dashboard/dashboard_adm.php");
             } else {
-                header("Location: ../anggota/dashboard.php");
+                header("Location: ../user/anggota/dashboard.php");
             }
             exit;
         }
