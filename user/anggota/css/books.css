@@ -956,7 +956,7 @@ body {
 .btn-primary {
     width: 100%;
     padding: 12px;
-    background-color: #2ecc71; /* Hijau Segar */
+    background-color: #2e3bcc; /* Hijau Segar */
     color: white;
     border: none;
     border-radius: 8px;
@@ -967,7 +967,7 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #27ae60;
+    background-color: #275bae;
     transform: translateY(-2px);
 }
 
