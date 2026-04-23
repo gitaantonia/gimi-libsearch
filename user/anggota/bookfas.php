@@ -51,19 +51,19 @@ for ($h = (int)date('H'); $h <= 18; $h++) {
 
 <body>
     <div class="page-wrapper">
-    <nav class="navbar">
-        <div class="nav-logo"><img src="aset/img/logo.png" alt="GiMi Logo"></div>
-        <ul class="nav-links">
-            <li><a href="dashboard.php">Home</a></li>
-            <li><a href="books.php">Books</a></li>
-            <li><a href="facilities.php" class="active">Facilities</a></li>
-            <li><a href="reports.php">Reports</a></li>
-            <li><a href="profile.php">Profile</a></li>
-            <li>
-                <a href="../../regis/logout.php" style="color:#c0392b;">Logout</a>
-            </li>
-        </ul>
-    </nav>
+        <nav class="navbar">
+            <div class="nav-logo"><img src="aset/img/logo.png" alt="GiMi Logo"></div>
+            <ul class="nav-links">
+                <li><a href="dashboard.php">Home</a></li>
+                <li><a href="books.php">Books</a></li>
+                <li><a href="facilities.php" class="active">Facilities</a></li>
+                <li><a href="reports.php">Reports</a></li>
+                <li><a href="profile.php">Profile</a></li>
+                <li>
+                    <a href="../../regis/logout.php" style="color:#c0392b;">Logout</a>
+                </li>
+            </ul>
+        </nav>
 
         <div class="content-grid">
 
@@ -80,9 +80,10 @@ for ($h = (int)date('H'); $h <= 18; $h++) {
 
                 <div class="facility-img-wrap">
                     <img
-                        src="../admin/upload/<?= htmlspecialchars($data['gambar']) ?>"
+                        src="../../admin/dashboard/upload/<?= htmlspecialchars($data['gambar']) ?>"
                         alt="<?= htmlspecialchars($data['nama_fasilitas']) ?>"
-                        onerror="this.onerror=null; this.src='../aset/img/default.jpg';">
+                        onerror="this.onerror=null; this.src='../../admin/dashboard/upload/default.jpg';">
+
                     <div class="img-tags">
                         <span class="img-tag">
                             <?= getCategoryIcon($data['kategori']) ?>

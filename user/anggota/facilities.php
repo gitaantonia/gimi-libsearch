@@ -2,17 +2,12 @@
 session_start();
 require "../../regis/koneksi.php";
 
-// ============================================================
-// GUARD — harus login dulu
-// ============================================================
 if (!isset($_SESSION["id_pengguna"])) {
     header("Location: ../../regis/login.php");
     exit;
 }
 
-// ============================================================
-// AJAX — fetch fasilitas (dipanggil oleh JS)
-// ============================================================
+// AJAX fetch
 if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
     $kategori = isset($_GET['kategori']) ? $_GET['kategori'] : 'all';
     $lokasi   = isset($_GET['lokasi'])   ? $_GET['lokasi']   : '';
@@ -31,6 +26,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
     if (count($conditions) > 0) {
         $sql .= " WHERE " . implode(' AND ', $conditions);
     }
+    $sql .= " ORDER BY id DESC";
 
     $result = mysqli_query($conn, $sql);
     $data = [];
@@ -63,9 +59,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
             <li><a href="facilities.php" class="active">Facilities</a></li>
             <li><a href="reports.php">Reports</a></li>
             <li><a href="profile.php">Profile</a></li>
-            <li>
-                <a href="../../regis/.php" style="color:#c0392b;">Logout</a>
-            </li>
+            <li><a href="../../regis/logout.php" style="color:#c0392b;">Logout</a></li>
         </ul>
     </nav>
 
@@ -88,6 +82,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
         <div class="library-status">● Library Open &bull; Closes at 9:00 PM</div>
     </div>
 
+    <!-- Filter kategori — value HARUS sama dengan yang ada di kolom kategori DB -->
     <div class="filter-container">
         <button class="filter-btn active" data-kategori="ruang_diskusi" onclick="setKategori('ruang_diskusi', this)">Collaborative</button>
         <button class="filter-btn" data-kategori="meja_baca" onclick="setKategori('meja_baca', this)">Quiet Zones</button>
@@ -98,11 +93,13 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
 
     <script>
         let activeKategori = 'ruang_diskusi';
-        let activeLokasi   = 'Lantai 1';
+        let activeLokasi = 'Lantai 1';
 
         function pindahKeLantai() {
             const target = document.getElementById('target-navigasi');
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
+            if (target) target.scrollIntoView({
+                behavior: 'smooth'
+            });
         }
 
         function setKategori(kategori, el) {
@@ -127,7 +124,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
                 const url = `facilities.php?action=fetch&kategori=${encodeURIComponent(activeKategori)}&lokasi=${encodeURIComponent(activeLokasi)}`;
                 const response = await fetch(url);
 
-                // Kalau server redirect ke login (non-JSON), tangani dengan baik
                 const contentType = response.headers.get('content-type') || '';
                 if (!contentType.includes('application/json')) {
                     window.location.href = '../../regis/login.php';
@@ -154,14 +150,15 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
             data.forEach(item => {
                 const statusLabel = getStatusLabel(item.status);
                 const lokasiLabel = getLantaiLabel(item.lokasi);
-                const id          = item.id;
+                const id = item.id;
+                // tersedia & dikembalikan = bisa booking
                 const isAvailable = (item.status === 'tersedia' || item.status === 'dikembalikan');
 
                 const card = `
                 <div class="card">
-                    <div class="img-container">
-                        <img src="../admin/upload/${item.gambar || 'default.jpg'}" alt="${item.nama_fasilitas}"
-                             onerror="this.src='aset/img/default.jpg'">
+<div class="img-container">
+    <img src="../../admin/dashboard/upload/${item.gambar || 'default.jpg'}" alt="${item.nama_fasilitas}"
+         onerror="this.src='aset/img/default.jpg'">
                         <div class="img-overlay">
                             <span class="badge-level">${lokasiLabel}</span>
                             <span class="badge-status status-${item.status}">${statusLabel}</span>
@@ -176,8 +173,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
                         </div>
                         <p class="desc">${item.deskripsi || ''}</p>
                         <div class="card-footer">
-                            <button 
-                                class="btn-book ${isAvailable ? '' : 'disabled'}" 
+                            <button
+                                class="btn-book ${isAvailable ? '' : 'disabled'}"
                                 ${isAvailable ? '' : 'disabled'}
                                 onclick="${isAvailable ? `window.location.href='bookfas.php?id=${id}'` : ''}">
                                 ${isAvailable ? 'Book Now' : 'Unavailable'}
@@ -188,8 +185,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
                 container.innerHTML += card;
             });
 
+            // Explore card
             container.innerHTML += `
-            <div class="card card-explore" onclick="pindahKeLantai()" style="cursor: pointer;">
+            <div class="card card-explore" onclick="pindahKeLantai()" style="cursor:pointer;">
                 <div class="explore-inner">
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#b0b8c9" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     <h4>Explore All Facilities</h4>
@@ -200,11 +198,12 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
 
         function getStatusLabel(status) {
             const map = {
-                tersedia:     '✦ Available',
+                tersedia: '✦ Available',
                 dikembalikan: '✦ Available',
-                dipinjam:     'Borrowed',
-                pending:      'Pending',
-                terlambat:    'Overdue'
+                dipinjam: 'Borrowed',
+                pending: 'Pending',
+                terlambat: 'Overdue',
+                maintenance: 'Maintenance',
             };
             return map[status] || status;
         }

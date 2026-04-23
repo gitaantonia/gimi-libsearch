@@ -70,7 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['proses_pinjam'])) {
     }
 }
 
-$cover = !empty($buku['cover_url']) ? $buku['cover_url'] : "aset/no-cover.png";
+// Pastikan path menunjuk ke folder admin dari posisi file user
+$cover = !empty($buku['cover_url']) 
+         ? "../../admin/aset/covers/" . $buku['cover_url'] 
+         : "../../admin/aset/covers/no-cover.png";
 ?>
 
 <!DOCTYPE html>

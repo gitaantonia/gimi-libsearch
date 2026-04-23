@@ -34,7 +34,10 @@ if (!$buku) {
     exit;
 }
 // fallback cover
-$cover = !empty($buku['cover_url']) ? $buku['cover_url'] : "aset/no-cover.png";
+// Pastikan path menunjuk ke folder admin dari posisi file user
+$cover = !empty($buku['cover_url']) 
+         ? "../../admin/aset/covers/" . $buku['cover_url'] 
+         : "../../admin/aset/covers/no-cover.png";
 
 // 3. BARU BUAT LINK (Setelah $buku dipastikan ada isinya)
 $linkPinjam = "pinjam.php?id=" . urlencode($buku['id_buku']);

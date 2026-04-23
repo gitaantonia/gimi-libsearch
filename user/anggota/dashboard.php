@@ -27,7 +27,7 @@ $stmt = $conn->prepare("
     ORDER BY p.tgl_pinjam DESC
     LIMIT 3
 ");
-$stmt->bind_param("s", $id_pengguna);
+$stmt->bind_param("i", $id_pengguna);
 $stmt->execute();
 $res = $stmt->get_result();
 while ($row = $res->fetch_assoc()) {
@@ -245,10 +245,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajukan_pinjam"])) {
 }
 
 // Helper: cover buku fallback
-function cover($url, $judul = "")
-{
-    if (!empty($url)) return htmlspecialchars($url);
-    return "aset/no-cover.png";
+function coverBuku($url) {
+    if (empty($url)) return "../../admin/aset/covers/no-cover.png";
+    if (str_starts_with($url, 'http')) return htmlspecialchars($url);
+    return "../../admin/aset/covers/" . htmlspecialchars(basename($url));
+}
+function fotoAuthor($url) {
+    if (empty($url)) return "";
+    if (str_starts_with($url, 'http')) return htmlspecialchars($url);
+    return "../../admin/aset/pengarang/" . htmlspecialchars(basename($url));
 }
 ?>
 <!DOCTYPE html>
@@ -402,34 +407,40 @@ function cover($url, $judul = "")
                 <h2>New &amp;<br>Trending</h2>
                 <p class="trending-sub">Explorer New World From Authors</p>
 
-                <?php if (!empty($trending_books)): ?>
+            <?php if (!empty($trending_books)): ?>
                     <div class="trending-main-book">
-                        <img src="<?= cover($trending_books[0]['cover_url'], $trending_books[0]['judul']) ?>"
-                            alt="<?= htmlspecialchars($trending_books[0]['judul']) ?>">
+                        <img src="<?= coverBuku($trending_books[0]['cover_url']) ?>"
+                             alt="<?= htmlspecialchars($trending_books[0]['judul']) ?>"
+                             onerror="this.src='../../admin/aset/covers/no-cover.png'">
                     </div>
                 <?php endif; ?>
             </div>
 
-            <div class="trending-right">
+               <div class="trending-right">
                 <!-- Author of the Week -->
                 <?php if ($author_week): ?>
                     <div class="author-week-card">
                         <p class="card-label">Author of the Week</p>
-                        <?php if (!empty($author_week['foto_pengarang'])): ?>
-                            <img src="<?= htmlspecialchars($author_week['foto_pengarang']) ?>"
-                                alt="<?= htmlspecialchars($author_week['pengarang']) ?>" class="author-photo">
+                        <?php
+                        $foto = fotoAuthor($author_week['foto_pengarang'] ?? '');
+                        if ($foto): ?>
+                            <img src="<?= $foto ?>"
+                                 alt="<?= htmlspecialchars($author_week['pengarang']) ?>"
+                                 class="author-photo"
+                                 onerror="this.style.display='none'">
                         <?php endif; ?>
                         <h4><?= htmlspecialchars($author_week['pengarang']) ?></h4>
                         <p><?= $author_week['total_buku'] ?> Books</p>
                     </div>
                 <?php endif; ?>
-
+ 
                 <!-- Last Read -->
                 <?php if ($last_read): ?>
                     <div class="last-read-card">
                         <p class="card-label">Last Read</p>
-                        <img src="<?= cover($last_read['cover_url'], $last_read['judul']) ?>"
-                            alt="<?= htmlspecialchars($last_read['judul']) ?>">
+                        <img src="<?= coverBuku($last_read['cover_url']) ?>"
+                             alt="<?= htmlspecialchars($last_read['judul']) ?>"
+                             onerror="this.src='../../admin/aset/covers/no-cover.png'">
                         <h4><?= htmlspecialchars($last_read['judul']) ?></h4>
                         <p><?= htmlspecialchars($last_read['pengarang']) ?></p>
                     </div>
@@ -445,6 +456,7 @@ function cover($url, $judul = "")
         <div class="trending-rak"></div>
 
         <!-- ===================== RECENTLY BORROWED ===================== -->
+          <!-- RECENTLY BORROWED -->
         <section class="recently-section">
             <h3 class="section-label-vertical">Recently Borrowed</h3>
             <div class="recently-grid">
@@ -453,8 +465,9 @@ function cover($url, $judul = "")
                 <?php else: ?>
                     <?php foreach ($recently_borrowed as $rb): ?>
                         <div class="recent-card">
-                            <img src="<?= cover($rb['cover_url'], $rb['judul']) ?>"
-                                alt="<?= htmlspecialchars($rb['judul']) ?>">
+                            <img src="<?= coverBuku($rb['cover_url']) ?>"
+                                 alt="<?= htmlspecialchars($rb['judul']) ?>"
+                                 onerror="this.src='../../admin/aset/covers/no-cover.png'">
                             <div class="recent-info">
                                 <h4><?= htmlspecialchars($rb['judul']) ?></h4>
                                 <p><?= htmlspecialchars($rb['pengarang']) ?></p>
