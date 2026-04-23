@@ -1,10 +1,10 @@
 <?php
 //session_start();
-include '../koneksi.php';
+include '../../regis/koneksi.php';
 
 // Security check
 if (!isset($_SESSION['role']) || ($_SESSION['role'] != 'pustakawan' && $_SESSION['role'] != 'admin')) {
-    header("Location: ../login/loginadm.php");
+    header("Location: ../../regis/login.php");
     exit;
 }
 
@@ -165,7 +165,7 @@ if ($qTotal && $rt = mysqli_fetch_assoc($qTotal)) {
                 <p class="text-xs text-gray-500 truncate">Librarian</p>
             </div>
         </div>
-        <a href="../login/logoutadm.php" class="mt-2 flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-[#1a1d24] transition-colors cursor-pointer">
+        <a href="../../regis/logout.php" class="mt-2 flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-[#1a1d24] transition-colors cursor-pointer">
             <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             <span class="font-medium">Logout</span>
         </a>
