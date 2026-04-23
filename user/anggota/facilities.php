@@ -92,8 +92,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'fetch') {
     <div id="facilities-container" class="facilities-grid"></div>
 
     <script>
-        let activeKategori = 'ruang_diskusi';
-        let activeLokasi = 'Lantai 1';
+    let activeKategori = 'all';  // tampilkan semua dulu
+let activeLokasi = '';
 
         function pindahKeLantai() {
             const target = document.getElementById('target-navigasi');
