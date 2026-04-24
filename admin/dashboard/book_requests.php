@@ -11,7 +11,65 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] != 'pustakawan' && $_SESSION
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_peminjaman'])) {
     $id_peminjaman = $_POST['id_peminjaman'];
 
-    if (isset($_POST['tgl_pinjam']) && isset($_POST['tgl_kembali'])) {
+    if (isset($_POST['action_type']) && $_POST['action_type'] == 'return') {
+        $tgl_kembali = $_POST['tgl_kembali'];
+        $kondisi = $_POST['kondisi_buku'];
+        $id_buku = $_POST['id_buku'] ?? '';
+        $id_anggota = $_POST['id_anggota'] ?? '';
+
+        $conn->begin_transaction();
+        try {
+            if ($kondisi == 'Baik') {
+                $status = 'dikembalikan';
+                if (!empty($id_buku)) {
+                    $q_buku = "UPDATE buku SET stok = stok + 1 WHERE id_buku = ?";
+                    $stmt_buku = $conn->prepare($q_buku);
+                    $stmt_buku->bind_param("s", $id_buku);
+                    $stmt_buku->execute();
+                }
+            } elseif ($kondisi == 'Rusak') {
+                $status = 'rusak';
+            } else {
+                $status = 'hilang';
+            }
+
+            $query_update = "UPDATE peminjaman SET status = ?, tgl_kembali = ? WHERE id_peminjaman = ?";
+            $stmt_update = $conn->prepare($query_update);
+            $stmt_update->bind_param("sss", $status, $tgl_kembali, $id_peminjaman);
+            $stmt_update->execute();
+
+            if ($kondisi == 'Rusak' || $kondisi == 'Hilang') {
+                $id_laporan = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
+                $tipe_laporan = 'Issue';
+                if ($kondisi == 'Hilang') {
+                    $tipe_laporan = 'Incident';
+                }
+                $deskripsi = "Buku dikembalikan dalam keadaan " . strtolower($kondisi);
+                
+                $judul = "Buku";
+                if(!empty($id_buku)){
+                    $qb = $conn->prepare("SELECT judul FROM buku WHERE id_buku=?");
+                    $qb->bind_param("s", $id_buku);
+                    $qb->execute();
+                    $rb = $qb->get_result()->fetch_assoc();
+                    if($rb) $judul = $rb['judul'];
+                }
+                
+                $q_lapor = "INSERT INTO laporan (id_laporan, id_anggota, tipe_laporan, tgl_kejadian, terkait_item, deskripsi) VALUES (?, ?, ?, ?, ?, ?)";
+                $stmt_lapor = $conn->prepare($q_lapor);
+                $stmt_lapor->bind_param("sissss", $id_laporan, $id_anggota, $tipe_laporan, $tgl_kembali, $judul, $deskripsi);
+                $stmt_lapor->execute();
+            }
+
+            $conn->commit();
+            $_SESSION['msg'] = "Book returned successfully!";
+            $_SESSION['msg_type'] = "success";
+        } catch (Exception $e) {
+            $conn->rollback();
+            $_SESSION['msg'] = "Failed to return book.";
+            $_SESSION['msg_type'] = "danger";
+        }
+    } elseif (isset($_POST['tgl_pinjam']) && isset($_POST['tgl_kembali'])) {
         // Proses ACC
         $tgl_pinjam = $_POST['tgl_pinjam'];
         $tgl_kembali = $_POST['tgl_kembali'];
@@ -345,8 +403,12 @@ $result = $stmt->get_result();
                                             <button onclick="openRejectModal('<?php echo $row['id_peminjaman']; ?>')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-2.5 py-1.5 rounded-lg transition-colors"><i class="fa-solid fa-xmark"></i></button>
                                         <?php endif; ?>
                                     </div>
+                                <?php elseif ($row['status'] == 'dipinjam'): ?>
+                                    <button onclick="openReturnModal('<?php echo $row['id_peminjaman']; ?>', '<?php echo $row['id_buku']; ?>', '<?php echo $row['id_anggota']; ?>')" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ml-auto">
+                                        <i class="fa-solid fa-rotate-left"></i> Return
+                                    </button>
                                 <?php else: ?>
-                                    <span class="text-gray-600"><i class="fa-solid fa-ellipsis"></i></span>
+                                    <span class="text-gray-600 flex justify-end"><i class="fa-solid fa-ellipsis"></i></span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -423,12 +485,52 @@ $result = $stmt->get_result();
     </div>
 </div>
 
+<!-- Tailwind Modal Return -->
+<div id="modalReturn" class="modal-hidden fixed inset-0 z-50 items-center justify-center">
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="closeReturnModal()"></div>
+    <div class="bg-[#15181e] border border-[#2d3139] rounded-xl shadow-2xl z-10 w-full max-w-md mx-4 transform transition-all">
+        <div class="flex justify-between items-center p-5 border-b border-[#2d3139]">
+            <h3 class="text-lg font-semibold text-white">Return Book</h3>
+            <button onclick="closeReturnModal()" class="text-gray-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form action="" method="POST">
+            <div class="p-5 space-y-4">
+                <input type="hidden" name="action_type" value="return">
+                <input type="hidden" name="id_peminjaman" id="return_id_request">
+                <input type="hidden" name="id_buku" id="return_id_buku">
+                <input type="hidden" name="id_anggota" id="return_id_anggota">
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Return Date</label>
+                    <input type="date" class="w-full bg-[#0b0d10] border border-[#2d3139] text-gray-200 rounded-lg p-2.5" name="tgl_kembali" required value="<?php echo date('Y-m-d'); ?>">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Book Condition</label>
+                    <select name="kondisi_buku" required class="w-full bg-[#0b0d10] border border-[#2d3139] text-gray-200 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option value="Baik">Good (Baik)</option>
+                        <option value="Rusak">Damaged (Rusak)</option>
+                        <option value="Hilang">Lost (Hilang)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="p-5 border-t border-[#2d3139] flex justify-end gap-3 bg-[#0b0d10]/50 rounded-b-xl">
+                <button type="button" onclick="closeReturnModal()" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-300 bg-[#1a1d24] hover:bg-[#2d3139] border border-[#2d3139] transition-colors">Cancelled</button>
+                <button type="submit" class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 transition-colors">Submit Return</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 const modalAcc = document.getElementById('modalAcc');
 const accReqId = document.getElementById('acc_id_request');
 const accBukuId = document.getElementById('acc_id_buku');
 const modalReject = document.getElementById('modalReject');
 const rejectReqId = document.getElementById('reject_id_request');
+const modalReturn = document.getElementById('modalReturn');
+const returnReqId = document.getElementById('return_id_request');
+const returnBukuId = document.getElementById('return_id_buku');
+const returnAnggotaId = document.getElementById('return_id_anggota');
 
 function openAccModal(id, buku) {
     accReqId.value = id;
@@ -451,6 +553,19 @@ function openRejectModal(id) {
 function closeRejectModal() {
     modalReject.classList.remove('modal-show');
     modalReject.classList.add('modal-hidden');
+}
+
+function openReturnModal(id, buku, anggota) {
+    returnReqId.value = id;
+    returnBukuId.value = buku;
+    returnAnggotaId.value = anggota;
+    modalReturn.classList.remove('modal-hidden');
+    modalReturn.classList.add('modal-show');
+}
+
+function closeReturnModal() {
+    modalReturn.classList.remove('modal-show');
+    modalReturn.classList.add('modal-hidden');
 }
 </script>
 
